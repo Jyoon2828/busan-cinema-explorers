@@ -28,7 +28,7 @@
     if (DATA.some(c=>c.id===input.cinema)) out.cinema=input.cinema;
     return out;
   }
-  let storageOK=true, state=fresh(), currentEvidence=0, projection=false, hintOpen=false, savedTimer, toastTimer, lastFocus;
+  let storageOK=true, state=fresh(), currentEvidence=0, projection=false, hintOpen=false, memoryTab='together', researchMode='photos', compareTopic='feature', meaningTab='missing', savedTimer, toastTimer, lastFocus;
   try {const raw=localStorage.getItem(KEY); if(raw) state=sanitize(JSON.parse(raw));} catch {storageOK=false;}
   const getPath = path => path.split('.').reduce((o,k)=>o?.[k],state) ?? '';
   function setPath(path,value) {const parts=path.split('.');let obj=state;for(const key of parts.slice(0,-1))obj=obj[key];obj[parts.at(-1)]=value;}
@@ -60,36 +60,78 @@
     $('#main').innerHTML=[memoryPage,researchPage,comparePage,meaningPage,reportPage][state.step]();
     $('#bottomBar').innerHTML=`<div class="bottom-left">${state.step>0?`<button class="btn secondary" data-action="step" data-step="${state.step-1}">← ${STEPS[state.step-1]}</button>`:'<span class="pill-note">우리의 경험에서 출발해요</span>'}<span class="bottom-hint">${['떠오르는 경험을 자유롭게 적어 보세요.','근거는 자료 아래의 ‘근거 담기’를 눌러 모아요.','서로 다른 영화관의 역할을 비교해요.','자료에서 찾은 사실과 나의 생각을 연결해요.','기록을 저장해 선생님이나 친구와 나눠요.'][state.step]}</span></div><div class="button-row">${state.step<4?`<button class="btn" data-action="step" data-step="${state.step+1}">${STEPS[state.step+1]} <span aria-hidden="true">→</span></button>`:'<button class="btn" data-action="download-png">기록 이미지 저장 ↓</button>'}</div>`;
     document.body.classList.toggle('projection',projection);
+    if(state.step===1)$('#bottomBar').innerHTML=`<button class="btn secondary" data-action="step" data-step="0">← 경험</button><button class="btn soft record-toggle" data-action="record">나의 기록장 <span data-note-progress>${progress(cinema(state.cinema))} / 3</span></button><button class="btn" data-action="step" data-step="2">비교 →</button>`;
     $('#saveState').textContent=storageOK?'이 기기에 저장':'임시 기록 · 파일로 저장하세요';
   }
+
   function memoryPage() {
-    const a=cinema('dureraum'),b=cinema('lotte');
-    return pageTop('01','우리가 다녀온 곳, 함께 가 볼 곳','영화관에서 보낸 시간을 떠올리며 우리 지역의 영화관을 탐험해요.')+
-      `<div class="memory-grid"><section class="journey-card surface"><div class="journey-title">우리 반의 영화관 여정</div><div class="journey-pair"><article class="journey-item">${photo(a.cover,a.coverAlt,'journey-image')}<div class="journey-body"><span class="tag">1학기에 다녀왔어요</span><h3>영화의전당</h3><p>어떤 모습과 활동이<br>기억에 남아 있나요?</p></div></article><article class="journey-item">${photo(b.cover,b.coverAlt,'journey-image')}<div class="journey-body"><span class="tag warm">${dateLabel()} 방문 예정</span><h3>롯데시네마 동래점</h3><p>친구들과 함께 갈 곳을<br>미리 살펴볼까요?</p></div></article></div><p class="photo-note">자료 사진으로 살펴보는 장소예요. 우리 반의 방문 당일 사진은 아니에요.</p></section><section class="memory-form surface" aria-label="경험 기록">${field('memory.together','<span class="n">01</span>함께 영화를 본 기억','누구와 무엇을 했나요? 함께 웃거나 이야기를 나눈 순간을 떠올려 보세요.',{help:'영화관에 가 본 적이 없다면 집이나 학교에서 함께 본 경험도 좋아요.'})}${field('memory.dureraum','<span class="n">02</span>1학기 영화의전당에서의 기억','직접 보았던 모습이나 해 보았던 활동은 무엇인가요?',{help:'기억이 잘 나지 않으면 친구의 이야기를 듣거나 사진을 살펴보세요.'})}</section></div><section class="big-question"><div><small>오늘 함께 생각할 질문</small><p>집에서도 영화를 볼 수 있는데,<br>우리 지역에는 왜 영화관이 있을까요?</p></div><span class="q" aria-hidden="true">?</span><button class="btn warm" data-action="step" data-step="1">조사하러 가기 →</button></section>`;
+    const a=cinema('dureraum'), b=cinema('lotte');
+    const remembered=memoryTab==='dureraum';
+    return `<section class="memory-view">${pageTop('01','우리가 다녀온 곳, 함께 가 볼 곳','영화관에서 함께 보낸 시간을 떠올려요.')}<div class="memory-grid"><section class="journey-card surface"><div class="journey-pair"><article class="journey-item">${photo(a.cover,a.coverAlt,'journey-image')}<div class="journey-body"><span class="tag">1학기에 다녀온 곳</span><h3>영화의전당</h3></div></article><article class="journey-item">${photo(b.cover,b.coverAlt,'journey-image')}<div class="journey-body"><span class="tag warm">${dateLabel()} 방문 예정</span><h3>롯데시네마 동래점</h3></div></article></div><p class="photo-note">우리 반의 방문 사진이 아닌, 장소를 살펴보는 자료 사진이에요.</p></section><section class="memory-form surface"><div class="large-tabs" aria-label="기록할 경험"><button data-action="memory-tab" data-value="together" aria-pressed="${!remembered}" class="${!remembered?'active':''}">함께 본 기억</button><button data-action="memory-tab" data-value="dureraum" aria-pressed="${remembered}" class="${remembered?'active':''}">영화의전당</button></div>${remembered?field('memory.dureraum','1학기 영화의전당에서의 기억','직접 보았던 모습이나 해 보았던 활동을 떠올려 보세요.',{help:'기억이 잘 나지 않으면 왼쪽 사진을 보거나 친구의 이야기를 들어 보세요.'}):field('memory.together','함께 영화를 본 기억','누구와 무엇을 했나요? 함께 웃거나 이야기를 나눈 순간을 써 보세요.',{help:'영화관에 가 본 적이 없다면 집이나 학교에서 함께 본 경험도 좋아요.'})}</section></div><section class="big-question"><p>집에서도 영화를 볼 수 있는데,<br>우리 지역에는 왜 영화관이 있을까요?</p><button class="btn warm" data-action="step" data-step="1">조사 시작 →</button></section></section>`;
   }
+  function evidenceEntries(mode=researchMode) {
+    return cinema(state.cinema).evidence.map((item,index)=>({item,index})).filter(({item})=>mode==='photos'?item.kind==='photo':item.kind!=='photo');
+  }
+  function activeEvidence() {
+    let entries=evidenceEntries();
+    if(!entries.length){researchMode=researchMode==='photos'?'reading':'photos';entries=evidenceEntries();}
+    if(!entries.some(e=>e.index===currentEvidence))currentEvidence=entries[0]?.index??0;
+    return {entries,entry:entries.find(e=>e.index===currentEvidence),position:entries.findIndex(e=>e.index===currentEvidence)};
+  }
+  function moveEvidence(delta) {
+    const {entries,position}=activeEvidence();
+    currentEvidence=entries[(position+delta+entries.length)%entries.length].index;
+    render();
+  }
+
   function researchPage() {
-    const c=cinema(state.cinema),n=state.notes[c.id],e=c.evidence[currentEvidence];
-    return pageTop('02','사진과 자료에서 특징을 찾아요','한 곳을 깊이 살펴본 뒤 다른 영화관과 비교해 보세요.',`<button class="btn secondary" data-action="sources">자료 출처 보기 ↗</button>`).replace('class="page-top"','class="page-top research-header"')+
-      `<div class="research-layout"><aside class="cinema-list" aria-label="조사할 영화관">${DATA.map(t=>`<button class="cinema-button${t.id===c.id?' active':''}" data-action="cinema" data-cinema="${t.id}" ${t.id===c.id?'aria-pressed="true"':'aria-pressed="false"'}>${photo(t.cover,t.coverAlt)}<span class="body"><span class="tag${tagClass(t.id)}">${t.id==='lotte'?dateLabel()+' 방문 예정':t.badge}</span><strong>${t.short}</strong><span class="status" id="progress-${t.id}">${progress(t)===3?'✓ 조사 기록 완료':`기록 ${progress(t)} / 3`}</span></span></button>`).join('')}<p class="list-hint">같은 영화관을 조사해도<br>발견한 특징은 다를 수 있어요.</p></aside><section class="source-panel surface" aria-label="조사 자료"><div class="source-top"><div><span class="area">BUSAN · ${c.area}</span><h2>${c.name}</h2></div><button class="btn secondary" data-action="location">위치 보기 ↗</button></div><div class="evidence-tabs" role="tablist" aria-label="살펴볼 자료">${c.evidence.map((t,i)=>`<button class="evidence-tab${i===currentEvidence?' active':''}" role="tab" id="evidence-tab-${i}" aria-controls="evidence-panel" aria-selected="${i===currentEvidence}" data-action="evidence" data-index="${i}">자료 ${i+1} · ${t.kind==='photo'?'사진':t.kind==='location'?'교통':t.kind==='facts'?'안내':'읽기'}</button>`).join('')}</div><div role="tabpanel" id="evidence-panel" aria-labelledby="evidence-tab-${currentEvidence}">${evidenceMedia(e)}<div class="source-reading"><h3>${e.title}</h3><p>${e.text}</p>${e.word?`<p class="word-help">${e.word}</p>`:''}<div class="evidence-prompt">생각해 보기 · ${e.question}</div><div class="source-bottom"><span class="source-counter">${currentEvidence+1} / ${c.evidence.length}번째 자료</span><button class="btn ${n.evidence.includes(e.id)?'soft':''}" data-action="collect" data-evidence="${e.id}">${n.evidence.includes(e.id)?'✓ 근거에 담았어요':'＋ 이 자료를 근거로 담기'}</button></div><p class="source-credit">${e.credit?esc(e.credit)+'<br>':''}<a href="${c.sources[e.source].url}" target="_blank" rel="noopener noreferrer">자료 원문 · ${c.sources[e.source].name} ↗</a></p></div></div></section><aside class="notebook surface" aria-label="조사 기록장"><h3>나의 조사 기록장</h3><p class="notebook-intro">자료를 보고 찾은 것을 내 말로 적어요.</p>${field('notes.'+c.id+'.feature','① 내가 찾은 특징','어떤 공간이나 활동이 눈에 띄나요?') }<div class="field"><span class="prompt-label" id="evidenceLabel">② 특징을 확인한 근거</span><div class="evidence-selected" aria-labelledby="evidenceLabel">${evidenceTokens(c)}</div></div>${field('notes.'+c.id+'.help','③ 사람들에게 주는 도움','이 특징 덕분에 사람들은 무엇을 할 수 있나요?')}<div class="note-count" id="noteCount">${progress(c)} / 3 기록 · ${c.lookFor}</div></aside></div>`;
+    const c=cinema(state.cinema), n=state.notes[c.id], {entries,entry,position}=activeEvidence(), e=entry.item;
+    const photos=c.evidence.filter(t=>t.kind==='photo').length, readings=c.evidence.length-photos;
+    return `<section class="research-view"><nav class="cinema-strip" aria-label="조사할 영화관">${DATA.map(t=>`<button class="cinema-choice ${t.id===c.id?'active':''}" data-action="cinema" data-cinema="${t.id}" aria-pressed="${t.id===c.id}">${photo(t.cover,t.coverAlt)}<span><strong>${t.short}</strong><small>${t.id==='lotte'?dateLabel()+' 방문 예정':t.badge}</small></span><span class="strip-progress" id="progress-${t.id}">${progress(t)===3?'✓':progress(t)+'/3'}</span></button>`).join('')}</nav><section class="explore-panel surface" aria-label="영화관 조사 자료"><header class="explore-head"><h1>${c.name}</h1><div class="large-tabs" aria-label="자료 종류"><button class="${researchMode==='photos'?'active':''}" data-action="research-mode" data-value="photos" aria-pressed="${researchMode==='photos'}">사진 <span>${photos}</span></button><button class="${researchMode==='reading'?'active':''}" data-action="research-mode" data-value="reading" aria-pressed="${researchMode==='reading'}">읽기 자료 <span>${readings}</span></button></div><button class="btn secondary compact-action" data-action="location">위치</button><button class="btn secondary compact-action" data-action="sources">출처</button></header><div class="explore-body"><div class="visual-column">${evidenceMedia(e)}<div class="visual-index" aria-label="${researchMode==='photos'?'사진':'읽기 자료'} 선택">${entries.map(({item,index},i)=>`<button class="${researchMode==='photos'?'photo-thumb':'reading-thumb'} ${index===currentEvidence?'active':''}" data-action="evidence" data-index="${index}" aria-label="${i+1}. ${esc(item.title)}" aria-pressed="${index===currentEvidence}">${item.kind==='photo'?photo(item.image,item.alt):`<span>${i+1}</span><strong>${item.title}</strong>`}</button>`).join('')}</div></div><article class="research-reading" aria-live="polite"><div><span class="reading-position">${researchMode==='photos'?'사진':'읽기 자료'} ${position+1} / ${entries.length}</span><h2>${e.title}</h2><p>${e.text}</p></div><div class="reading-question"><strong>생각해 보기</strong><p>${e.question}</p></div><div class="reading-tools">${e.word?'<button class="btn secondary" data-action="word-help">낱말 도움</button>':''}<a class="source-link" href="${c.sources[e.source].url}" target="_blank" rel="noopener noreferrer">자료 원문 ↗</a></div></article></div><footer class="explore-footer"><div class="picture-navigation"><button class="btn secondary" data-action="previous-evidence" aria-label="이전 ${researchMode==='photos'?'사진':'자료'}">← 이전</button><span>${position+1} / ${entries.length}</span><button class="btn secondary" data-action="next-evidence" aria-label="다음 ${researchMode==='photos'?'사진':'자료'}">다음 →</button></div><button class="btn ${n.evidence.includes(e.id)?'soft':''}" data-action="collect" data-evidence="${e.id}">${n.evidence.includes(e.id)?'✓ 근거에 담았어요':'＋ 이 자료를 근거로 담기'}</button></footer></section></section>`;
   }
+
   function evidenceMedia(e) {
-    if(e.kind==='photo')return `<div class="media-frame" data-action="zoom">${photo(e.image,e.alt,'evidence-image')}<button class="zoom-button" data-action="zoom">사진 크게 보기 ⤢</button></div>`;
-    if(e.kind==='facts')return `<div class="facts-media"><span class="number">${e.number}</span><div><strong>${e.unit}</strong><small>${e.sub}</small><div class="mini-screens" aria-hidden="true">▣ ▣ ▣</div></div></div>`;
-    if(e.kind==='location')return `<div class="location-media"><span class="station-bubble" aria-hidden="true">1</span><div><p>${e.line}</p><h3>${e.station}</h3><p>롯데백화점 방향 연결 육교</p></div></div>`;
-    return `<div class="reading-media"><span class="symbol" aria-hidden="true">${e.symbol}</span><div><small>공식 소개에서 읽어 봐요</small><h3>${e.title}</h3></div></div>`;
+    if(e.kind==='photo')return `<button class="photo-stage" data-action="zoom" aria-label="${esc(e.title)} 사진 크게 보기">${photo(e.image,e.alt)}<span class="zoom-caption">사진 크게 보기 ⤢</span></button>`;
+    if(e.kind==='facts')return `<div class="fact-stage"><small>공식 안내에서 확인해요</small><div><strong>${e.number}</strong><span>${e.unit}</span></div><p>${e.sub}</p></div>`;
+    if(e.kind==='location')return `<div class="fact-stage location-stage"><small>${e.line}</small><h2>${e.station}</h2><p>롯데백화점 방향<br>연결 육교 이용</p><button class="btn secondary" data-action="location">지도에서 위치 보기 ↗</button></div>`;
+    return `<div class="reading-stage">${photo(cinema(state.cinema).cover,cinema(state.cinema).coverAlt)}<span>사진과 함께 소개 글을 읽어 봐요</span></div>`;
+  }
+  function recordModal() {
+    const c=cinema(state.cinema);
+    modal(c.name+' 조사 기록장',`<p class="record-intro">자료에서 찾은 특징과 사람들에게 주는 도움을 내 말로 적어요.</p><div class="record-writing-grid">${field('notes.'+c.id+'.feature','① 내가 찾은 특징','어떤 공간이나 활동이 눈에 띄나요?',{rows:5})}${field('notes.'+c.id+'.help','③ 사람들에게 주는 도움','이 특징 덕분에 사람들은 무엇을 할 수 있나요?',{rows:5})}</div><section class="record-evidence"><h3>② 특징을 확인한 근거</h3><div class="evidence-selected">${evidenceTokens(c)}</div></section><div class="record-modal-footer"><span id="noteCount">${progress(c)} / 3 기록 완료</span><button class="btn" data-action="close">자료로 돌아가기</button></div>`);
+    $('#modal').classList.add('record-dialog');
+  }
+  function galleryModal() {
+    const c=cinema(state.cinema), photos=c.evidence.map((item,index)=>({item,index})).filter(e=>e.item.kind==='photo');
+    let at=photos.findIndex(e=>e.index===currentEvidence);if(at<0)at=0;const e=photos[at].item;
+    modal(e.title,`<div class="gallery-photo">${photo(e.image,e.alt)}</div><div class="gallery-caption"><p>${esc(e.credit||c.coverCredit)}</p><span>${at+1} / ${photos.length}</span></div><div class="gallery-controls"><button class="btn secondary" data-action="gallery-prev">← 이전 사진</button><button class="btn" data-action="collect" data-evidence="${e.id}">${state.notes[c.id].evidence.includes(e.id)?'✓ 근거에 담았어요':'＋ 근거로 담기'}</button><button class="btn secondary" data-action="gallery-next">다음 사진 →</button></div>`,true);
+    $('#modal').classList.add('gallery-dialog');
+  }
+  function moveGallery(delta) {
+    const photos=cinema(state.cinema).evidence.map((item,index)=>({item,index})).filter(e=>e.item.kind==='photo');
+    const at=Math.max(0,photos.findIndex(e=>e.index===currentEvidence));currentEvidence=photos[(at+delta+photos.length)%photos.length].index;
+    galleryModal();
   }
   function evidenceTokens(c) {
     const ids=state.notes[c.id].evidence;
     return ids.length?ids.map(id=>`<span class="evidence-token"><span>${c.evidence.find(e=>e.id===id).title}</span><button data-action="remove-evidence" data-evidence="${id}" aria-label="${esc(c.evidence.find(e=>e.id===id).title)} 근거에서 빼기">×</button></span>`).join(''):'<span class="empty-evidence">자료 아래의 ‘근거 담기’를 누르세요.</span>';
   }
+
   function comparePage() {
-    return pageTop('03','세 영화관을 나란히 살펴봐요','조사한 내용을 친구와 나누고, 공통점과 차이점을 찾아요.',`<button class="btn secondary" data-action="projection">${projection?'보통 크기로':'발표 화면 크게'} ⤢</button>`)+
-      `<div class="compare-grid">${DATA.map(c=>{const n=state.notes[c.id];return `<article class="compare-card surface">${photo(c.cover,c.coverAlt)}<div class="body"><span class="tag${tagClass(c.id)}">${c.id==='lotte'?dateLabel()+' 방문 예정':c.badge}</span><h2>${c.name}</h2><div class="record-block"><span class="label">내가 찾은 특징</span><p>${noteValue(n.feature)}</p></div><div class="record-block"><span class="label">자료에서 확인한 근거</span><p>${n.evidence.length?n.evidence.map(id=>esc(c.evidence.find(e=>e.id===id).title)).join('<br>'):'<span class="record-empty">아직 담은 근거가 없어요.</span>'}</p></div><div class="record-block"><span class="label">사람들에게 주는 도움</span><p>${noteValue(n.help)}</p></div><button class="btn secondary" data-action="cinema" data-cinema="${c.id}">조사 기록 이어 쓰기 →</button></div></article>`;}).join('')}</div><div class="compare-questions"><section class="surface">${field('compare.same','영화관들의 공통점은 무엇인가요?','여러 영화관에서 사람들이 함께 할 수 있는 일을 생각해 보세요.')}</section><section class="surface">${field('compare.different','서로 다른 특징은 무엇인가요?','만날 수 있는 작품, 공간, 활동 등을 비교해 보세요.')}</section></div>`;
+    const labels={feature:'찾은 특징',evidence:'확인한 근거',help:'사람들에게 주는 도움'};
+    return `<section class="comparison-view">${pageTop('03','세 영화관을 나란히 살펴봐요','같은 항목끼리 비교하고 친구들과 생각을 나눠요.',`<button class="btn secondary" data-action="projection">${projection?'보통 화면':'발표 화면 크게'} ⤢</button>`)}<div class="comparison-toolbar"><div class="large-tabs">${Object.entries(labels).map(([k,v])=>`<button class="${compareTopic===k?'active':''}" data-action="compare-topic" data-value="${k}" aria-pressed="${compareTopic===k}">${v}</button>`).join('')}</div><button class="btn soft" data-action="compare-write">공통점·차이점 기록</button></div><div class="compare-grid">${DATA.map(c=>{const n=state.notes[c.id];return `<article class="compare-card surface">${photo(c.cover,c.coverAlt)}<div class="body"><h2>${c.name}</h2><div class="record-block"><span class="label">${labels[compareTopic]}</span><p>${compareTopic==='evidence'?(n.evidence.length?n.evidence.map(id=>esc(c.evidence.find(e=>e.id===id).title)).join('<br>'):'아직 담은 근거가 없어요.'):noteValue(n[compareTopic])}</p></div><button class="btn secondary" data-action="cinema" data-cinema="${c.id}">조사 기록 이어 쓰기</button></div></article>`;}).join('')}</div></section>`;
   }
+  function compareModal() {
+    modal('공통점과 차이점 기록',`<div class="record-writing-grid">${field('compare.same','영화관들의 공통점','함께 할 수 있는 일을 떠올려 보세요.',{rows:6})}${field('compare.different','서로 다른 특징','만나는 작품, 공간, 활동 등을 비교해 보세요.',{rows:6})}</div><div class="record-modal-footer"><span>이 기기에 자동으로 저장돼요.</span><button class="btn" data-action="close">비교 화면으로</button></div>`);
+    $('#modal').classList.add('record-dialog');
+  }
+
   function meaningPage() {
-    const picked=DATA.find(c=>progress(c)===3)||DATA.find(c=>state.notes[c.id].feature.trim());
-    return pageTop('04','영화관이 우리 지역에 주는 것은?','자료에서 찾은 사실을 지역 사람들의 생활과 연결해 보세요.')+
-      `<div class="meaning-layout"><section class="meaning-question"><div><span class="qmark" aria-hidden="true">“</span><span class="tag">생각을 넓히는 질문</span><h2 style="margin-top:16px">우리 지역에서<br>영화관이 사라진다면,<br>어떤 활동이 줄어들까요?</h2><p>영화를 보는 일, 함께하는 사람, 나누는 이야기를 떠올려 보세요.</p></div>${picked?`<div class="meaning-bridge"><span class="small">내가 찾은 사실에서 출발해요 · ${picked.name}</span><p>${esc(state.notes[picked.id].feature)}</p></div>`:''}</section><section class="meaning-form surface">${field('meaning.missing','① 영화관이 사라지면 달라질 일','누구에게 어떤 경험이나 기회가 줄어들까요?')}<div class="sentence-frame">문장 도움말<br>______에서는 ______을 할 수 있습니다.<br>그래서 지역 사람들이 ______하는 데 도움이 된다고 생각합니다.</div>${field('meaning.final','② 우리 지역 영화관의 의미','조사한 특징과 근거를 넣어 내 생각을 써 보세요.',{rows:4})}<button class="hint-toggle" data-action="hint" aria-expanded="${hintOpen}">${hintOpen?'생각 도움말 닫기 −':'생각이 잘 떠오르지 않을 때 ＋'}</button>${hintOpen?`<div class="hint-box"><ul><li>누구와 함께 시간을 보내고 추억을 만들 수 있나요?</li><li>어떤 새로운 이야기와 사람들의 삶을 만나나요?</li><li>서로의 느낌과 생각을 어떻게 나누나요?</li><li>영화와 관련해 무엇을 더 배우거나 경험하나요?</li></ul></div>`:''}</section></div><div class="meaning-definition"><strong>문화 공간이란?</strong><p>사람들이 함께 작품을 즐기고, 생각을 나누며, 새로운 것을 경험하는 곳이라고 생각해 볼 수 있어요.</p></div>`;
+    const first=meaningTab==='missing',picked=DATA.find(c=>progress(c)===3)||DATA.find(c=>state.notes[c.id].feature.trim());
+    return `<section class="meaning-view">${pageTop('04','영화관이 우리 지역에 주는 것은?','찾은 특징을 사람들의 생활과 연결해 보세요.')}<div class="large-tabs meaning-tabs"><button data-action="meaning-tab" data-value="missing" class="${first?'active':''}" aria-pressed="${first}">① 영화관이 사라진다면</button><button data-action="meaning-tab" data-value="final" class="${!first?'active':''}" aria-pressed="${!first}">② 내가 생각한 의미</button></div><div class="meaning-layout"><section class="meaning-question"><h2>${first?'우리 지역에서<br>영화관이 사라진다면,<br>어떤 경험이 줄어들까요?':'우리 지역 영화관은<br>사람들에게 어떤<br>도움을 주나요?'}</h2>${picked?`<div class="meaning-bridge"><span>${picked.name}에서 내가 찾은 특징</span><p>${esc(state.notes[picked.id].feature)}</p></div>`:'<p>함께 영화를 본 경험과 자료에서 알게 된 것을 떠올려 보세요.</p>'}</section><section class="meaning-form surface">${first?field('meaning.missing','영화관이 사라지면 달라질 일','누구에게 어떤 경험이나 기회가 줄어들까요?',{rows:6}):field('meaning.final','우리 지역 영화관의 의미','찾은 특징과 근거를 넣어 내 생각을 써 보세요.',{rows:6})}<div class="meaning-form-actions"><button class="btn secondary" data-action="meaning-help">생각·문장 도움말</button>${first?'<button class="btn" data-action="meaning-tab" data-value="final">의미 쓰기 →</button>':''}</div></section></div></section>`;
+  }
+  function meaningHelp() {
+    modal('생각과 문장 도움말',`<p class="sentence-frame">______에서는 ______을 할 수 있습니다.<br>그래서 지역 사람들이 ______하는 데 도움이 된다고 생각합니다.</p><ul><li>누구와 함께 시간을 보내고 추억을 만들 수 있나요?</li><li>어떤 새로운 이야기와 사람들의 삶을 만나나요?</li><li>영화와 관련해 무엇을 더 배우거나 경험하나요?</li></ul><p>문화 공간은 사람들이 함께 작품을 즐기고 생각을 나누며 새로운 것을 경험하는 곳이라고 생각해 볼 수 있어요.</p>`);
   }
   function reportPage() {
     const count=DATA.filter(c=>progress(c)===3).length;
@@ -106,7 +148,7 @@
   }
   function showToast(msg) {clearTimeout(toastTimer);$('#toast').textContent=msg;$('#toast').classList.add('show');toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2600);}
   function modal(title,body,wide=false) {
-    const d=$('#modal');lastFocus=document.activeElement;d.classList.toggle('modal-image',wide);
+    const d=$('#modal');lastFocus=document.activeElement;d.classList.remove('record-dialog','gallery-dialog');d.classList.toggle('modal-image',wide);
     $('#modalContent').innerHTML=`<div class="modal-inner"><div class="modal-heading"><h2 id="modalTitle">${title}</h2><button class="modal-close" data-action="close" aria-label="닫기">×</button></div>${body}</div>`;
     if(!d.open)d.showModal();
   }
@@ -117,7 +159,7 @@
     modal('이용 안내와 설정',`<p><strong>경험 나누기 → 영화관 조사 → 비교 → 의미 찾기 → 기록 저장</strong></p><p>세 영화관을 모두 살펴보거나, 모둠별로 한 곳을 맡아 조사할 수 있어요. 같은 모둠을 골라도 기록은 기기마다 따로 저장돼요.</p><div class="button-row"><button class="btn soft" data-action="sources">사진 · 자료 출처</button><button class="btn secondary" data-action="projection">${projection?'보통 화면으로':'발표 화면 크게'}</button><button class="btn secondary" data-action="fullscreen">전체 화면</button></div><hr><h3>선생님 수업 안내</h3><p>경험 나누기 5분 → 자료 조사 15분 → 비교·의미 나누기 15분 → 정리 5분. 6모둠이라면 영화관 한 곳을 두 모둠씩 조사해 서로 다른 발견을 나눌 수 있어요.</p><p>학생이 자료에서 특징과 근거를 찾은 뒤, 그 특징이 사람들의 생활에 주는 도움을 설명하도록 해 주세요. 방문 당시 이용한 공간과 자료로 새롭게 알게 된 공간을 구분합니다.</p><h3>우리 반 체험 정보</h3><p class="small">체험 정보는 현재 기기에만 적용됩니다. 다른 기기의 기록에는 영향을 주지 않아요.</p><div class="modal-grid"><div class="field"><label class="prompt-label" for="tripDate">롯데시네마 동래점 체험일</label><input id="tripDate" type="date" value="${state.settings.tripDate}" data-field="settings.tripDate"></div><div class="field"><label class="prompt-label" for="className">학급</label><input id="className" type="text" maxlength="40" value="${esc(state.settings.className)}" data-field="settings.className"></div></div><div class="field"><label class="prompt-label" for="movieTitle">관람 영화 (정해진 뒤 입력)</label><input id="movieTitle" type="text" maxlength="80" value="${esc(state.settings.movie)}" data-field="settings.movie" placeholder="아직 정해지지 않았다면 비워 두세요."></div><hr><h3>기록 보관</h3><p>로그인 없이 사용합니다. 기록은 서버로 전송되지 않고 현재 브라우저에 저장돼요. 브라우저 데이터를 지우기 전에는 ‘이어 쓰기 파일’을 저장해 주세요.</p><div class="button-row"><button class="btn secondary" data-action="backup">이어 쓰기 파일 저장</button><button class="btn secondary" data-action="import">파일 열기</button><button class="btn secondary" data-action="reset-question">나의 기록 지우기</button></div>`);
   }
   function sourcesModal() {
-    modal('사진과 조사자료의 출처',`<p>2026년 10월 30일 공식 안내를 확인하고, 4학년이 읽기 쉽게 요약했어요. 상영 영화·시간·요금은 고정된 조사자료에 넣지 않았어요.</p>${DATA.map(c=>`<div class="modal-source"><h3>${c.name}</h3>${c.sources.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name} ↗</a>`).join('')}</div>`).join('')}<hr><p class="small">사진은 장소를 살펴보기 위한 자료 사진이며 우리 반 방문 사진이 아닙니다. 영화의전당 사진: 부산관광공사 부산 관광 아카이브(공공누리 이용 조건은 원자료에 표시). 그 밖의 사진별 출처는 각 자료 아래에 표시했습니다. 사진의 원저작권은 제공 기관에 있습니다.</p><p class="small">지도는 위치 확인을 위해 외부 지도 검색으로 열립니다. 앱 안의 ‘위치 자료’는 교통 안내를 요약한 것으로 실제 지도가 아닙니다.</p>`);
+    modal('사진과 조사자료의 출처',`<p>2026년 10월 30일 공식 안내를 확인하고, 4학년이 읽기 쉽게 요약했어요. 상영 영화·시간·요금은 고정된 조사자료에 넣지 않았어요.</p>${DATA.map(c=>`<div class="modal-source"><h3>${c.name}</h3>${c.sources.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name} ↗</a>`).join('')}<ul class="photo-source-list">${c.evidence.filter(e=>e.kind==='photo').map(e=>`<li><strong>${esc(e.title)}</strong><br>${esc(e.credit||c.coverCredit)}</li>`).join('')}</ul></div>`).join('')}<hr><p class="small">사진은 장소를 살펴보기 위한 자료 사진이며 우리 반 방문 사진이 아닙니다. 영화의전당 사진: 부산관광공사 부산 관광 아카이브(공공누리 이용 조건은 원자료에 표시). 사진별 출처는 큰 사진 보기에서 확인할 수 있어요. 사진의 원저작권은 제공 기관에 있습니다.</p><p class="small">지도는 위치 확인을 위해 외부 지도 검색으로 열립니다. 앱 안의 ‘위치 자료’는 교통 안내를 요약한 것으로 실제 지도가 아닙니다.</p>`);
   }
   function downloadBlob(blob,name) {const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
   const filename = ext => `영화관_탐험기록_${(state.identity||state.group&&state.group+'모둠'||'나의기록').replace(/[\\/:*?"<>|]/g,'_')}.${ext}`;
@@ -170,29 +212,47 @@
     const el=event.target,path=el.dataset.field;if(!path)return;
     if(path==='settings.tripDate'&&(!el.value||!/^\d{4}-\d{2}-\d{2}$/.test(el.value)))return;
     setPath(path,el.value);save();
-    if(path.startsWith('notes.')){const c=cinema(state.cinema);const p=$('#progress-'+c.id);if(p)p.textContent=progress(c)===3?'✓ 조사 기록 완료':`기록 ${progress(c)} / 3`;if($('#noteCount'))$('#noteCount').textContent=`${progress(c)} / 3 기록 · ${c.lookFor}`;}
+    if(path.startsWith('notes.')){const c=cinema(state.cinema);const p=$('#progress-'+c.id);if(p)p.textContent=progress(c)===3?'✓':`${progress(c)}/3`;if($('#noteCount'))$('#noteCount').textContent=`${progress(c)} / 3 기록 완료`;document.querySelectorAll('[data-note-progress]').forEach(el=>el.textContent=progress(c)+' / 3');}
     if(state.step===4 && path.startsWith('visit.'))$('.report-sheet').innerHTML=reportHTML(false);
   });
   document.addEventListener('change',event=>{const el=event.target;if(el.matches('select[data-field]')){setPath(el.dataset.field,el.value);save();}});
   document.addEventListener('error',event=>{if(event.target instanceof HTMLImageElement&&!event.target.dataset.fallback){event.target.dataset.fallback='true';event.target.src='assets/photo-unavailable.svg';event.target.alt+=' · 사진을 불러오지 못했어요. 자료 원문에서 확인하세요.';}},true);
-  document.addEventListener('keydown',event=>{if(event.target.matches('.evidence-tab')&&['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();currentEvidence=(currentEvidence+(event.key==='ArrowRight'?1:2))%3;render();$('#evidence-tab-'+currentEvidence).focus();}});
+  document.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight'].includes(event.key)||event.target.matches('input,textarea,select'))return;if($('#modal').open&&$('#modal').classList.contains('gallery-dialog')){event.preventDefault();moveGallery(event.key==='ArrowRight'?1:-1);}else if(state.step===1&&!$('#modal').open&&event.target.matches('.photo-thumb,.reading-thumb,.photo-stage')){event.preventDefault();moveEvidence(event.key==='ArrowRight'?1:-1);}});
   document.addEventListener('click',async event=>{
     const button=event.target.closest('[data-action]');if(!button)return;
     const action=button.dataset.action;
     if(action==='step')return goStep(Number(button.dataset.step));
-    if(action==='cinema'){state.cinema=button.dataset.cinema;state.step=1;currentEvidence=0;save();render();window.scrollTo({top:0,behavior:'instant'});return;}
+    if(action==='cinema'){state.cinema=button.dataset.cinema;state.step=1;currentEvidence=0;researchMode='photos';save();render();window.scrollTo({top:0,behavior:'instant'});return;}
     if(action==='evidence'){currentEvidence=Number(button.dataset.index);render();return;}
     if(action==='collect'||action==='remove-evidence'){
       const n=state.notes[state.cinema],id=button.dataset.evidence;
       if(action==='collect'){if(!n.evidence.includes(id))n.evidence.push(id);showToast('조사 기록장에 근거를 담았어요.');}
       else n.evidence=n.evidence.filter(e=>e!==id);
-      save();render();return;
+      const galleryOpen=$('#modal').open&&$('#modal').classList.contains('gallery-dialog');
+      const recordOpen=$('#modal').open&&$('#modal').classList.contains('record-dialog');
+      save();render();
+      if(galleryOpen)galleryModal();
+      else if(recordOpen){$('.record-evidence .evidence-selected').innerHTML=evidenceTokens(cinema(state.cinema));$('#noteCount').textContent=progress(cinema(state.cinema))+' / 3 기록 완료';}
+      return;
     }
+
+    if(action==='memory-tab'){memoryTab=button.dataset.value;render();return;}
+    if(action==='research-mode'){researchMode=button.dataset.value;activeEvidence();render();return;}
+    if(action==='previous-evidence')return moveEvidence(-1);
+    if(action==='next-evidence')return moveEvidence(1);
+    if(action==='record')return recordModal();
+    if(action==='word-help'){const e=activeEvidence().entry.item;return modal('낱말 도움',`<p>${esc(e.word)}</p>`);}
+    if(action==='gallery-prev')return moveGallery(-1);
+    if(action==='gallery-next')return moveGallery(1);
+    if(action==='compare-topic'){compareTopic=button.dataset.value;render();return;}
+    if(action==='compare-write')return compareModal();
+    if(action==='meaning-tab'){meaningTab=button.dataset.value;render();return;}
+    if(action==='meaning-help')return meaningHelp();
     if(action==='identity')return identityModal();
     if(action==='menu')return menuModal();
     if(action==='close')return $('#modal').close();
     if(action==='sources')return sourcesModal();
-    if(action==='zoom'){const e=cinema(state.cinema).evidence[currentEvidence];return modal(e.title,`${photo(e.image,e.alt)}<p style="margin-top:12px">${esc(e.credit)}<br>${esc(e.text)}</p>`,true);}
+    if(action==='zoom')return galleryModal();
     if(action==='location'){const c=cinema(state.cinema);return modal(c.name+'의 위치',`<span class="tag">부산 ${c.area}</span><h3>${c.address}</h3><p>${c.location}</p><a class="btn" href="https://map.kakao.com/link/search/${encodeURIComponent(c.name)}" target="_blank" rel="noopener noreferrer">지도에서 위치 확인 ↗</a><p class="small" style="margin-top:15px">새 탭에서 지도가 열려요. 자세한 교통 안내는 영화관 공식 안내를 확인해요.</p>`);}
     if(action==='hint'){hintOpen=!hintOpen;render();return;}
     if(action==='projection'){projection=!projection;if($('#modal').open)$('#modal').close();render();showToast(projection?'발표 화면을 크게 표시해요.':'보통 크기로 돌아왔어요.');return;}

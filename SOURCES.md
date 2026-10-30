@@ -34,3 +34,31 @@
 교통·상영관 수 자료의 도형 표현, 문장틀, ‘지역 사람들에게 어떤 도움이 될까?’ 질문과 문화 공간에 관한 학생의 생각은 수업용 구성입니다. 사진과 달리 실제 시설을 재현한 그림이나 현장 사진으로 표시하지 않습니다. 문화적 의미는 정답으로 미리 채우지 않고 학생이 자료와 자신의 경험을 연결해 작성합니다.
 
 외부 사진의 원저작권과 원자료의 이용 조건은 각각의 제공 기관에 있습니다. 라이브러리 사진의 상업적 이용 금지 등 개별 조건은 사진과 함께 유지해야 합니다. 아이콘·레이아웃용 SVG는 이 웹앱을 위해 코드로 작성했습니다.
+
+## 추가한 사진 6장 (2026-10-30)
+
+모든 사진은 원본 전체를 화면에 맞춰 표시합니다. 원본 픽셀·워터마크·크레딧을 유지하며, 이용 조건을 함께 보관합니다.
+
+### 롯데백화점 동래점의 출입구·내부
+
+- 한국관광공사 VISITKOREA 공식 장소 소개: https://english.visitkorea.or.kr/svc/whereToGo/locIntrdn/rgnContentsView.do?vcontsId=143451
+- 한국관광공사 제공 사진을 모은 KTRIPTIPS 갤러리: https://www.ktriptips.com/kor/shopping/2917189
+- `assets/lotte-entrance.jpg`: https://tong.visitkorea.or.kr/cms/resource/86/4018486_image2_1.jpg (940×434). 공식 VISITKOREA 본문 이미지 URL과 일치합니다.
+- `assets/lotte-corridor.jpg`: https://tong.visitkorea.or.kr/cms/resource/94/2885494_image2_1.jpg (940×705). 갤러리 이름은 ‘롯데백화점 동래점_2’입니다.
+- 크레딧: 한국관광공사 VISITKOREA, 공공누리 제3유형(출처표시·변경금지), 갤러리 메타데이터 Type3.
+- 백화점 건물의 사진이며, 롯데시네마 로비·상영관 내부 또는 확인된 이동 경로를 보여 주는 사진으로 설명하지 않습니다.
+
+### 영화의전당의 감독 역할 체험·공연
+
+- 출처: 위 한국관광공사 「부산 영화의전당 [2020 산업관광 13선]」, 2020년 9월, 글·사진 정철훈(여행작가).
+- `assets/dureraum-director.jpg`: https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=c6d4602a-cebb-425d-880c-60e23531a3d3 (700×467). 감독 역할 체험 장면.
+- `assets/dureraum-performance.jpg`: https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=53a808c3-8ca8-4473-a746-d4c12b707c57 (700×467). 공연 장면.
+- 기사의 이용 조건: 출처표시·상업용금지·변경금지. 원본을 자르거나 편집하지 않았습니다.
+- 현재 같은 프로그램이 운영된다는 뜻이 아니며, 우리 반의 1학기 방문 사진도 아닙니다.
+
+### 모퉁이극장 계단·매표 공간
+
+- 출처: 위 한국관광공사 「BNK부산은행아트시네마 모퉁이극장」 공개 사진 갤러리.
+- `assets/corner-stairs.jpg`: https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=336f92d2-bd4e-4f7f-87d6-1c40c97b8766 (940×627). 포스터가 붙은 계단.
+- `assets/corner-ticket-desk.jpg`: https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=c64be886-d5fc-4520-8200-af11a8664f35 (940×626). 매표 공간.
+- 크레딧: 한국관광공사 대한민국 구석구석. 공개 갤러리의 개별 라이선스 유형은 응답에 따로 표시되지 않았습니다. 원본·워터마크를 보존하며, 포스터와 안내물은 촬영 당시의 모습으로 설명합니다.
