@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#133e43">
+  <meta name="description" content="우리가 다녀온 영화의전당과 11월 26일에 가 볼 롯데시네마 동래점, 모퉁이극장을 조사하고 문화 공간의 의미를 생각해 봅니다.">
+  <title>부산 영화관 탐험대</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="data.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 이동</a>
+  <header class="app-header">
+    <button class="brand" data-action="step" data-step="0" aria-label="홈으로 이동">
+      <span class="brand-icon" aria-hidden="true">▥</span>
+      <span><span class="brand-sub">우리 지역 영화 수업</span><strong>부산 영화관 탐험대</strong></span>
+    </button>
+    <div class="header-right">
+      <span class="trip-chip" id="tripChip"></span>
+      <span class="save-state" id="saveState" role="status">이 기기에 저장</span>
+      <button class="icon-button" data-action="identity" aria-label="나의 이름과 모둠">나의 정보</button>
+      <button class="icon-button" data-action="menu" aria-label="이용 안내와 설정">안내 · 설정</button>
+    </div>
+  </header>
+  <nav class="steps" aria-label="활동 순서" id="stepNav"></nav>
+  <main id="main" tabindex="-1"></main>
+  <footer class="bottom-bar" id="bottomBar"></footer>
+  <dialog id="modal" aria-labelledby="modalTitle"><div id="modalContent"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="printRoot"></div>
+</body>
+</html>
