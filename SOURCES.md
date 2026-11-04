@@ -1,6 +1,6 @@
 # 자료 출처
 
-내용 확인일: 2026-10-30. 자료 사진은 촬영·게시 시점의 모습이며, 우리 반의 실제 방문 당일 사진이 아닙니다. 사진 원본의 픽셀은 수정하지 않았고 화면 표시 크기만 CSS로 조절합니다.
+내용 확인일: 기존 3곳 2026-10-30 / 추가 3곳 2026-11-04. 자료 사진은 촬영·게시 시점의 모습이며, 우리 반의 실제 방문 당일 사진이 아닙니다. 사진 원본의 픽셀은 수정하지 않았고 화면 표시 크기만 CSS로 조절합니다.
 
 ## 롯데시네마 동래점
 
@@ -62,3 +62,39 @@
 - `assets/corner-stairs.jpg`: https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=336f92d2-bd4e-4f7f-87d6-1c40c97b8766 (940×627). 포스터가 붙은 계단.
 - `assets/corner-ticket-desk.jpg`: https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=c64be886-d5fc-4520-8200-af11a8664f35 (940×626). 매표 공간.
 - 크레딧: 한국관광공사 대한민국 구석구석. 공개 갤러리의 개별 라이선스 유형은 응답에 따로 표시되지 않았습니다. 원본·워터마크를 보존하며, 포스터와 안내물은 촬영 당시의 모습으로 설명합니다.
+
+
+## 밀락수변 바다영화관 (2026-11-04 추가)
+
+- 공식 소개: https://millakcinema.imweb.me/4
+- 공식 이용 안내: https://millakcinema.imweb.me/5
+- 공식 오시는 길: https://millakcinema.imweb.me/6
+- 공식 공지사항: https://millakcinema.imweb.me/11
+- 상영 장소는 오시는 길의 부산 수영구 광안해변로 361, 민락수변공원 3번 게이트를 사용합니다. 홈페이지 하단 사업장 주소와 구분합니다.
+- 바다·광안대교를 배경으로 한 야외 상영, 개인 라디오·헤드셋, 문화 프로그램, 지역 식음료 업소 이용과 연결되는 페이백 제도를 어린이용으로 요약합니다. 날짜·요금·조건은 고정된 현재 정보로 제시하지 않습니다.
+- assets/millak-sea.png: https://cdn.imweb.me/thumbnail/20250826/f3c2e88054115.png
+- assets/millak-headsets.png: https://cdn.imweb.me/thumbnail/20250826/50942282aaaa5.png
+- assets/millak-events.png: https://cdn.imweb.me/thumbnail/20250826/0ac27db761f1e.png
+- 사진·홍보 이미지: 밀락수변 바다영화관 공식 홈페이지. 광고 문구를 포함한 원본 전체를 표시하며 자르거나 편집하지 않았습니다. 앱 설명에서 ‘유일’ 등의 최상급 광고 문구를 사실로 옮기지 않습니다. 원저작권은 제공 기관과 원권리자에게 있습니다.
+
+## CGV 센텀시티 IMAX (2026-11-04 추가)
+
+- 공식 지점 안내: https://cgv.co.kr/cnm/bzplcCgv/0089001
+- CJ뉴스룸, 2024.12.06 개관 보도자료: https://cjnews.cj.net/?p=56433
+- 특별관 용어 참고: https://cgv.co.kr/csc/frequentlyAskedQuestion
+- assets/centum-imax.jpg: https://img.cjnews.cj.net/wp-content/uploads/2024/12/cgv_media_241206_01-1-1024x621.jpg
+- IMAX 상영관 사진: CJ CGV · CJ뉴스룸 제공. 레이저 영사·대형 스크린·음향은 위 개관 자료에서 확인했습니다. 개관 당시의 크기 순위를 현재 사실로 표시하지 않습니다.
+- assets/centum-lobby.jpg: https://cdn.cgv.co.kr/cgvpsms/prdinfo/SOM/2026/0107/IBia91tAnqL1AgaUhaJK.jpg
+- 로비 사진은 공식 지점 안내의 대표 이미지입니다. IMAX 상영관 내부 사진과 구분합니다. 크레딧: CJ CGV · 센텀시티 공식 지점 안내. 원본 전체를 표시합니다.
+
+## CGV DRIVE IN 영도 (2026-11-04 추가)
+
+- 공식 지점 안내: https://cgv.co.kr/cnm/bzplcCgv/0367001
+- 부산관광공사 태종대 자동차극장: https://www.visitbusan.net/index.do?lang_cd=ko&menuCd=DOM_000000204005001000&uc_seq=1442
+- 부산관광공사 영도 여행 소개: https://www.visitbusan.net/index.do?lang_cd=ko&menuCd=DOM_000000201013001000&uc_seq=1440
+- 전경 소개영상: https://archive.visitbusan.net/dataSearch/view.nm?dataSid=METADATA016724
+- assets/yeongdo-video.png: https://archive.visitbusan.net/upload/2025/10/13/20251013132139286715_m.png
+- 입구 소개영상: https://archive.visitbusan.net/dataSearch/view.nm?dataSid=METADATA016718
+- assets/yeongdo-arrival.png: https://archive.visitbusan.net/upload/2025/10/13/20251013132139273477_m.png
+- 두 이미지는 공식 소개영상의 표지 정지 화면입니다. 크레딧: 부산관광공사 글로벌마케팅팀 · 하이픈그룹, 2025.04.01, 공공누리 제1유형(출처표시). 원본 전체를 표시합니다. 화면 속 영화는 제작 당시의 모습이며 현재 상영작을 뜻하지 않습니다.
+- 자동차 관객석·라디오 청취·대여·일몰 후 상영·기상 변동은 공식 지점 안내에서 확인했습니다. 고정 시간표와 요금은 싣지 않습니다.
