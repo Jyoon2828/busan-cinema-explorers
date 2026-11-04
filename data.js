@@ -1,4 +1,4 @@
-/* Stable evidence IDs and schema. Existing sources 2026-10-30; added sources 2026-11-04. */
+/* Six cinema choices. Evidence IDs and photo sources are retained. */
 window.CINEMA_DATA = [
   {
     "id": "lotte",
@@ -94,7 +94,6 @@ window.CINEMA_DATA = [
       }
     ],
     "lookFor": "상영관 입구, 로비, 좌석 안내, 사람들이 함께 기다리는 모습을 관찰해 봐요.",
-    "group": 1,
     "verifiedOn": "2026-10-30",
     "type": "생활 속 영화관"
   },
@@ -183,7 +182,6 @@ window.CINEMA_DATA = [
       }
     ],
     "lookFor": "우리 반이 실제로 이용했던 곳과 이번 자료에서 새롭게 알게 된 곳을 구분해 봐요.",
-    "group": 2,
     "verifiedOn": "2026-10-30",
     "type": "영화·공연·배움"
   },
@@ -265,19 +263,17 @@ window.CINEMA_DATA = [
         "image": "assets/corner-ticket-desk.jpg",
         "alt": "안내물과 영화 포스터가 놓여 있는 모퉁이극장 매표 공간",
         "credit": "사진: 한국관광공사 대한민국 구석구석 / 촬영 당시의 매표 공간",
-        "text": "영화표를 사고 안내를 살펴보는 모퉁이극장의 매표 공간이에요. 영화 포스터와 여러 안내물도 보여요. 큰 영화관의 매표 공간과 비교해 보세요.",
+        "text": "영화표를 사고 안내를 살펴보는 모퉁이극장의 매표 공간이에요. 영화 포스터와 여러 안내물도 보여요. 사람들이 영화표를 사고 안내를 살펴보는 모습을 떠올려 보세요.",
         "question": "사람들이 영화를 보기 전에 편리하게 이용하려면 어떤 안내가 필요할까요?",
         "source": 0
       }
     ],
     "lookFor": "영화관의 크기뿐 아니라 어떤 작품과 사람을 만날 수 있는지도 살펴봐요.",
-    "group": 3,
     "verifiedOn": "2026-10-30",
     "type": "독립·예술영화"
   },
   {
     "id": "millak",
-    "group": 4,
     "name": "밀락수변 바다영화관",
     "short": "밀락수변 바다영화관",
     "area": "수영구",
@@ -368,7 +364,6 @@ window.CINEMA_DATA = [
   },
   {
     "id": "centum",
-    "group": 5,
     "name": "CGV 센텀시티 IMAX",
     "short": "CGV 센텀시티 IMAX",
     "area": "해운대구",
@@ -406,7 +401,7 @@ window.CINEMA_DATA = [
         "image": "assets/centum-imax.jpg",
         "alt": "CGV 센텀시티 IMAX관의 큰 스크린과 좌석",
         "credit": "사진: CJ CGV · CJ뉴스룸 / 2024.12.06 개관 보도자료",
-        "text": "CGV 센텀시티 안에 있는 IMAX관의 실제 사진이에요. 스크린과 좌석의 배치를 살펴보고, 집이나 학교에서 영화를 보는 환경과 비교해 보세요.",
+        "text": "CGV 센텀시티 안에 있는 IMAX관의 실제 사진이에요. 스크린과 좌석의 배치를 살펴보고, 이곳에서 영화를 볼 때 어떤 느낌이 들지 생각해 보세요.",
         "question": "화면의 크기와 좌석 배치는 영화를 감상하는 경험에 어떤 영향을 줄까요?",
         "source": 1
       },
@@ -445,7 +440,6 @@ window.CINEMA_DATA = [
   },
   {
     "id": "yeongdo",
-    "group": 6,
     "name": "CGV DRIVE IN 영도",
     "short": "CGV DRIVE IN 영도",
     "area": "영도구",

@@ -90,3 +90,53 @@
  .group-assignment-list span{display:block;margin:3px 0 0 0}
 }
 @media print{.report-cinemas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Free choice and nine optional questions about the meaning of a cinema. */
+.cinema-choice small{font-weight:500}
+.meaning-tabs{align-self:stretch;justify-content:stretch}
+.meaning-tabs button{flex:1;font-size:18px;padding:9px 12px}
+.meaning-inquiry-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px}
+.meaning-panel{padding:19px;min-height:0;overflow:auto;scrollbar-width:thin}
+.meaning-panel h2{font-size:24px;line-height:1.4;margin:0 0 8px}
+.meaning-panel-intro{font-size:16px;color:var(--muted);margin:0 0 13px;line-height:1.5}
+.meaning-question-list{display:flex;flex-direction:column;gap:9px}
+.meaning-question-choice{display:grid;grid-template-columns:27px minmax(0,1fr) 15px;align-items:start;gap:9px;text-align:left;width:100%;padding:11px;border:1px solid var(--line);background:#fffef9;border-radius:12px;font-size:19px;line-height:1.5}
+.meaning-question-choice.active{border:2px solid var(--teal);background:#eaf3e9;padding:10px}
+.meaning-question-number{display:grid;place-items:center;background:#eef0e8;color:var(--teal);border-radius:8px;width:27px;height:29px;font-size:16px;font-weight:700}
+.meaning-question-choice.active .meaning-question-number{background:var(--teal);color:white}
+.meaning-answer-mark{font-size:18px;color:#347561;font-weight:800;line-height:1.5}
+.meaning-kicker{display:block;font-size:16px;color:#7a805e;margin-bottom:16px}
+.meaning-final-guide{background:#f1f0e4;display:flex;flex-direction:column;justify-content:center}
+.meaning-final-guide h2{font-size:28px;line-height:1.55;margin:0 0 20px}
+.meaning-final-guide .sentence-frame{font-size:21px;line-height:1.8;margin-bottom:12px}
+.meaning-final-guide .sentence-frame strong{color:var(--teal);font-weight:700}
+.meaning-final-guide .meaning-bridge{margin-top:14px}
+.meaning-form .field .prompt-label{font-size:21px;line-height:1.6}
+.meaning-form .field textarea{min-height:110px;font-size:21px;line-height:1.65}
+.meaning-form .field .help{font-size:16px;line-height:1.5;margin:9px 0 0}
+.meaning-form-actions .btn{min-height:44px;font-size:17px;padding:9px 13px}
+.meaning-optional{font-size:14px;color:var(--muted);line-height:1.5;margin:0}
+.report-meaning-answer{margin-bottom:18px;break-inside:avoid}
+.report-meaning-answer .report-label{line-height:1.65}
+@media(min-width:760px){body[data-step="3"] main{overflow:auto}}
+@media(min-width:760px) and (max-width:1120px){
+ .meaning-tabs button{font-size:17px;padding:8px 10px}
+ .meaning-panel{padding:17px}.meaning-panel h2{font-size:22px}
+ .meaning-question-choice{font-size:18px;line-height:1.5;padding:10px;gap:8px}
+ .meaning-question-choice.active{padding:9px}
+ .meaning-panel-intro{margin-bottom:10px}
+ .meaning-form .field .prompt-label{font-size:20px}
+ .meaning-form .field textarea{font-size:21px}
+ .meaning-final-guide h2{font-size:26px}.meaning-final-guide .sentence-frame{font-size:20px}
+}
+@media(max-width:759px){
+ .meaning-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+ .meaning-tabs button{font-size:16px;padding:9px}
+ .meaning-inquiry-layout{display:grid;grid-template-columns:1fr;gap:15px}
+ .meaning-panel{padding:18px;overflow:visible}
+ .meaning-question-choice{font-size:19px}
+ .meaning-form .field textarea{min-height:180px}
+ .meaning-form .field .prompt-label{font-size:20px}
+ .meaning-form-actions .btn{font-size:16px;padding:9px 12px}
+ .meaning-final-guide h2{font-size:26px}
+}
