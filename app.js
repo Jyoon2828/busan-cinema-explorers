@@ -10,18 +10,15 @@
   const $ = (s, root = document) => root.querySelector(s);
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const blankNote = () => ({feature:'', evidence:[], help:'', question:''});
-  const fresh = () => ({version:2, step:0, cinema:'lotte', identity:'', memory:{together:'', dureraum:''}, notes:Object.fromEntries(DATA.map(c=>[c.id,blankNote()])), meaning:{...Object.fromEntries(MEANING_QUESTIONS.map(q=>[q.id,''])),final:''}, visit:{observed:'', changed:''}, settings:{tripDate:'2026-11-26',className:'4학년 3반',movie:''}});
+  const fresh = () => ({version:3, step:0, cinema:'lotte', identity:'', memory:{together:'', impression:''}, notes:Object.fromEntries(DATA.map(c=>[c.id,blankNote()])), meaning:{...Object.fromEntries(MEANING_QUESTIONS.map(q=>[q.id,''])),final:''}, visit:{observed:'', changed:''}, settings:{movie:''}});
   function sanitize(input) {
     const out = fresh();
     if (!input || typeof input !== 'object' || Array.isArray(input)) return out;
     const str = (v, n=1000) => typeof v === 'string' ? v.slice(0,n) : '';
     out.identity=str(input.identity,60);
     for (const section of ['memory','meaning','visit']) for (const key of Object.keys(out[section])) out[section][key]=str(input[section]?.[key]);
-    if (input.settings && typeof input.settings==='object') {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(input.settings.tripDate || '') && !Number.isNaN(new Date(input.settings.tripDate+'T12:00:00').getTime())) out.settings.tripDate=input.settings.tripDate;
-      out.settings.className=str(input.settings.className ?? out.settings.className,40);
-      out.settings.movie=str(input.settings.movie,80);
-    }
+    if (!out.memory.impression && input.memory?.dureraum) out.memory.impression=str(input.memory.dureraum);
+    out.settings.movie=str(input.settings?.movie,80);
     for (const c of DATA) {
       const n = input.notes?.[c.id];
       if (!n || typeof n !== 'object') continue;
@@ -43,12 +40,8 @@
     clearTimeout(savedTimer);
     if(storageOK) savedTimer=setTimeout(()=>{el.textContent='이 기기에 저장';},1600);
   }
-  const dateLabel = (long=false) => {
-    const d=new Date(state.settings.tripDate+'T12:00:00');
-    return long ? `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일(${['일','월','화','수','목','금','토'][d.getDay()]})` : `${d.getMonth()+1}월 ${d.getDate()}일`;
-  };
   const cinema = id => DATA.find(c=>c.id===id);
-  const reportCinemas = () => { const written=DATA.filter(c=>{const n=state.notes[c.id];return n.feature.trim()||n.help.trim()||n.evidence.length;});return written.length?written:[cinema(state.cinema)]; };
+  const reportCinemas = () => { const written=DATA.filter(c=>{const n=state.notes[c.id];return n.feature.trim()||n.help.trim()||n.question.trim()||n.evidence.length;});return written.length?written:[cinema(state.cinema)]; };
   const meaningEntries = () => MEANING_QUESTIONS.filter(q=>state.meaning[q.id].trim());
   const progress = c => {const n=state.notes[c.id];return [!!n.feature.trim(),!!n.evidence.length,!!n.help.trim()].filter(Boolean).length;};
   const noteValue = (text,empty='아직 기록하지 않았어요.') => text.trim()?esc(text):`<span class="record-empty">${empty}</span>`;
@@ -57,23 +50,22 @@
   const pageTop = (num,title,sub,actions='') => `<div class="page-top"><div><div class="eyebrow">OUR CINEMA JOURNEY · ${num}</div><h1>${title}</h1><p>${sub}</p></div>${actions}</div>`;
   function photo(src,alt,cls='') {return `<img class="${cls}" src="${src}" alt="${esc(alt)}" decoding="async">`;}
   function isComplete(i) {
-    return [!!(state.memory.together.trim()||state.memory.dureraum.trim()),DATA.some(c=>progress(c)===3),!!state.meaning.final.trim(),false][i];
+    return [!!(state.memory.together.trim()||state.memory.impression.trim()),DATA.some(c=>progress(c)===3),!!state.meaning.final.trim(),false][i];
   }
   function render() {
     document.body.dataset.step=String(state.step);
-    $('#tripChip').textContent=`${dateLabel()} · 롯데시네마 동래점`;
+    $('#tripChip').textContent='부산의 초등학생 누구나';
     $('#stepNav').innerHTML=STEPS.map((title,i)=>`<button class="step${state.step===i?' active':''}${isComplete(i)?' complete':''}" data-action="step" data-step="${i}" ${state.step===i?'aria-current="step"':''}><span class="step-number">${isComplete(i)&&state.step!==i?'✓':`0${i+1}`}</span><span>${title}</span></button>`).join('');
     $('#main').innerHTML=[memoryPage,researchPage,meaningPage,reportPage][state.step]();
-    $('#bottomBar').innerHTML=`<div class="bottom-left">${state.step>0?`<button class="btn secondary" data-action="step" data-step="${state.step-1}">← ${STEPS[state.step-1]}</button>`:'<span class="pill-note">우리의 경험에서 출발해요</span>'}<span class="bottom-hint">${['떠오르는 경험을 자유롭게 적어 보세요.','근거는 자료 아래의 ‘근거 담기’를 눌러 모아요.','자료에서 찾은 사실과 나의 생각을 연결해요.','기록을 저장해 선생님이나 친구와 나눠요.'][state.step]}</span></div><div class="button-row">${state.step<3?`<button class="btn" data-action="step" data-step="${state.step+1}">${STEPS[state.step+1]} <span aria-hidden="true">→</span></button>`:'<button class="btn" data-action="download-png">기록 이미지 저장 ↓</button>'}</div>`;
+    $('#bottomBar').innerHTML=`<div class="bottom-left">${state.step>0?`<button class="btn secondary" data-action="step" data-step="${state.step-1}">← ${STEPS[state.step-1]}</button>`:'<span class="pill-note">우리의 경험에서 출발해요</span>'}<span class="bottom-hint">${['떠오르는 경험을 자유롭게 적어 보세요.','근거는 자료 아래의 ‘근거 담기’를 눌러 모아요.','자료에서 찾은 사실과 나의 생각을 연결해요.','기록을 저장해 선생님이나 친구와 나눠요.'][state.step]}</span></div><div class="button-row">${state.step<3?`<button class="btn" data-action="step" data-step="${state.step+1}">${STEPS[state.step+1]} <span aria-hidden="true">→</span></button>`:'<button class="btn" data-action="download-png">사진과 기록 저장 ↓</button>'}</div>`;
     document.body.classList.toggle('projection',projection);
     if(state.step===1)$('#bottomBar').innerHTML=`<button class="btn secondary" data-action="step" data-step="0">← 경험</button><button class="btn soft record-toggle" data-action="record">나의 기록장 <span data-note-progress>${progress(cinema(state.cinema))} / 3</span></button><button class="btn" data-action="step" data-step="2">의미 찾기 →</button>`;
     $('#saveState').textContent=storageOK?'이 기기에 저장':'임시 기록 · 파일로 저장하세요';
   }
 
   function memoryPage() {
-    const a=cinema('dureraum'), b=cinema('lotte');
-    const remembered=memoryTab==='dureraum';
-    return `<section class="memory-view">${pageTop('01','우리가 다녀온 곳, 함께 가 볼 곳','영화관에서 함께 보낸 시간을 떠올려요.')}<div class="memory-grid"><section class="journey-card surface"><div class="journey-pair"><article class="journey-item">${photo(a.cover,a.coverAlt,'journey-image')}<div class="journey-body"><span class="tag">1학기에 다녀온 곳</span><h3>영화의전당</h3></div></article><article class="journey-item">${photo(b.cover,b.coverAlt,'journey-image')}<div class="journey-body"><span class="tag warm">${dateLabel()} 방문 예정</span><h3>롯데시네마 동래점</h3></div></article></div><p class="photo-note">우리 반의 방문 사진이 아닌, 장소를 살펴보는 자료 사진이에요.</p></section><section class="memory-form surface"><div class="large-tabs" aria-label="기록할 경험"><button data-action="memory-tab" data-value="together" aria-pressed="${!remembered}" class="${!remembered?'active':''}">함께 본 기억</button><button data-action="memory-tab" data-value="dureraum" aria-pressed="${remembered}" class="${remembered?'active':''}">영화의전당</button></div>${remembered?field('memory.dureraum','1학기 영화의전당에서의 기억','직접 보았던 모습이나 해 보았던 활동을 떠올려 보세요.',{help:'기억이 잘 나지 않으면 왼쪽 사진을 보거나 친구의 이야기를 들어 보세요.'}):field('memory.together','함께 영화를 본 기억','누구와 무엇을 했나요? 함께 웃거나 이야기를 나눈 순간을 써 보세요.',{help:'영화관에 가 본 적이 없다면 집이나 학교에서 함께 본 경험도 좋아요.'})}</section></div><section class="big-question"><p>집에서도 영화를 볼 수 있는데,<br>우리 지역에는 왜 영화관이 있을까요?</p><button class="btn warm" data-action="step" data-step="1">조사 시작 →</button></section></section>`;
+    const remembered=memoryTab==='impression';
+    return `<section class="memory-view"><section class="adventure-hero"><img class="hero-art" src="assets/geohaki.png" alt="확성기를 들고 영화관 탐험을 안내하는 거학이 캐릭터"><div class="hero-copy"><span class="hero-kicker">부산의 초등학생 누구나!</span><h1>우리 동네 영화관,<br><em>거학이와 탐험해요!</em></h1><p>사진 속 여섯 영화관을 둘러보고<br>우리 지역의 문화 공간을 탐험해요.</p><button class="btn warm" data-action="step" data-step="1">탐험하러 가기 →</button></div></section><div class="memory-grid"><section class="journey-card surface"><span class="tag">탐험의 첫 장</span><h2>나의 영화 이야기를 꺼내요</h2><p>누구와 어디에서 영화를 보았나요?<br>함께 웃거나 감동했던 순간을 떠올려요.</p><p class="photo-note">영화관에 가 본 적이 없어도 괜찮아요.<br>집이나 학교에서 함께 영화를 본 경험도 좋아요.</p></section><section class="memory-form surface"><div class="large-tabs" aria-label="기록할 경험"><button data-action="memory-tab" data-value="together" aria-pressed="${!remembered}" class="${!remembered?'active':''}">함께 본 기억</button><button data-action="memory-tab" data-value="impression" aria-pressed="${remembered}" class="${remembered?'active':''}">마음에 남은 순간</button></div>${remembered?field('memory.impression','영화를 보며 마음에 남은 순간','어떤 장면이나 활동이 기억에 남나요? 그때의 기분도 써 보세요.',{rows:4,help:'본 영화나 영화를 보았던 장소는 어디든 좋아요.'}):field('memory.together','함께 영화를 본 기억','누구와 어디에서 무엇을 보았나요? 함께 웃거나 이야기를 나눈 순간을 써 보세요.',{rows:4,help:'떠오르는 경험이 없다면 함께 보고 싶은 영화를 써도 좋아요.'})}</section></div><section class="big-question"><p>우리 지역의 영화관은<br>사람들에게 어떤 즐거움과 가치를 줄까요?</p><button class="btn warm" data-action="step" data-step="1">여섯 영화관 살펴보기 →</button></section></section>`;
   }
   function evidenceEntries(mode=researchMode) {
     return cinema(state.cinema).evidence.map((item,index)=>({item,index})).filter(({item})=>mode==='photos'?item.kind==='photo':item.kind!=='photo');
@@ -135,14 +127,21 @@
   function meaningHelp() {
     modal('생각을 연결하는 문장 도움',`<p class="sentence-frame">${SENTENCE_FRAME}</p><p class="sentence-frame">______에서는 ______을 할 수 있습니다.<br>그래서 지역 사람들이 ______하는 데 도움이 된다고 생각합니다.</p><ul><li>사람들에게 주는 즐거움은 무엇인가요?</li><li>다른 사람과 함께 보는 경험에는 어떤 가치가 있나요?</li><li>그 즐거움과 가치를 조사한 자료나 경험에서 확인할 수 있나요?</li></ul><button class="btn" data-action="close">내 생각 쓰기</button>`);
   }
+  function reportPhotos(c) {
+    const selected=c.evidence.filter(e=>e.kind==='photo'&&state.notes[c.id].evidence.includes(e.id));
+    return selected.length?selected.map(e=>({src:e.image,alt:e.alt,title:e.title})):[{src:c.cover,alt:c.coverAlt,title:c.name+' 대표 사진'}];
+  }
+  function reportGallery(c) {
+    return `<div class="report-gallery">${reportPhotos(c).map(p=>`<figure><img class="report-photo" src="${p.src}" alt="${esc(p.alt)}"><figcaption>${esc(p.title)}</figcaption></figure>`).join('')}</div>`;
+  }
   function reportPage() {
     const count=DATA.filter(c=>progress(c)===3).length;
-    return pageTop('04','나의 영화관 탐험 기록','기록을 읽고 다듬은 뒤 파일로 저장해 나눠 보세요.',`<button class="btn secondary" data-action="identity">이름 쓰기</button>`)+
-      `<div class="report-layout"><div><article class="report-sheet surface">${reportHTML(false)}</article><section class="visit-box"><h3>${dateLabel()} 체험 뒤에도 이어 써요</h3><p>롯데시네마 동래점에 다녀온 뒤 실제로 관찰한 모습과 달라진 생각을 남겨 보세요.</p>${field('visit.observed','실제로 보거나 경험한 것','미리 조사했던 내용을 떠올리며, 현장에서 직접 본 것을 써 보세요.')}${field('visit.changed','다녀온 뒤 새롭게 알게 된 영화관의 의미','친구들과 함께 영화를 보고 나니 어떤 생각이 드나요?')}</section></div><aside class="report-actions surface"><h3>나의 기록 저장하기</h3><span class="completion">여섯 곳 중 ${count}곳 조사 완료 · 내 생각 ${state.meaning.final.trim()?'작성함':'작성 전'}</span><div class="button-row"><button class="btn" data-action="download-png">기록 이미지 저장 ↓</button><button class="btn secondary" data-action="print">인쇄 · PDF 저장</button><button class="btn secondary" data-action="copy">기록 글 복사</button></div><hr><p>작성한 내용은 이 기기의 이 브라우저에 저장돼요. 선생님께는 저장한 파일이나 복사한 글로 전달해요.</p><button class="btn soft" data-action="backup">이어 쓰기 파일 저장</button><button class="btn secondary" data-action="import">이어 쓰기 파일 열기</button><p class="small">다른 기기에서는 ‘이어 쓰기 파일’을 열어 계속 작성할 수 있어요.</p></aside></div>`;
+    return pageTop('04','나의 영화관 탐험 기록','나의 생각과 영화관 사진을 함께 저장해요.',`<button class="btn secondary" data-action="identity">이름 쓰기</button>`)+
+      `<div class="report-layout"><div><article class="report-sheet surface">${reportHTML(false)}</article><section class="visit-box"><h3>직접 다녀왔다면, 더 써 볼까요? <small>선택</small></h3><p>어느 영화관이든 직접 방문한 경험이 있다면 이어서 적어 보세요.</p>${field('visit.observed','실제로 보거나 경험한 것','어느 영화관에서 어떤 모습이나 활동을 직접 보았나요?')}${field('visit.changed','다녀온 뒤 새롭게 알게 된 영화관의 의미','함께 영화를 보니 어떤 생각이 들었나요?')}</section></div><aside class="report-actions surface"><h3>나의 기록 저장하기</h3><span class="completion">여섯 곳 중 ${count}곳 조사 완료 · 내 생각 ${state.meaning.final.trim()?'작성함':'작성 전'}</span><p class="small">근거로 담은 사진도 함께 저장돼요. 사진을 담지 않았다면 대표 사진이 들어가요.</p><div class="button-row"><button class="btn" data-action="download-png">사진과 기록 저장 ↓</button><button class="btn secondary" data-action="print">인쇄 · PDF 저장</button><button class="btn secondary" data-action="copy">기록 글 복사</button></div><hr><p>쓴 내용은 이 기기의 브라우저에 자동 저장돼요. 저장한 파일로 나의 탐험을 나눠 보세요.</p><button class="btn soft" data-action="backup">이어 쓰기 파일 저장</button><button class="btn secondary" data-action="import">이어 쓰기 파일 열기</button><p class="small">다른 기기에서는 ‘이어 쓰기 파일’을 열어 계속 작성할 수 있어요.</p></aside></div>`;
   }
   function reportHTML(print=false) {
-    const meta=[state.settings.className,state.identity||'이름 미입력'].filter(Boolean).join(' · ');
-    return `<p class="report-kicker">BUSAN CINEMA EXPLORERS</p><h2>우리 지역 영화관, 함께 발견한 의미</h2><div class="report-meta">${esc(meta)}<br>1학기 · 영화의전당 방문 &nbsp; / &nbsp; ${esc(dateLabel(true))} · 롯데시네마 동래점 체험${state.settings.movie?'<br>관람 영화 · '+esc(state.settings.movie):''}</div><section class="report-section"><h3>01 · 나의 경험</h3><span class="report-label">함께 영화를 본 기억</span><p>${noteValue(state.memory.together)}</p><span class="report-label">영화의전당에서의 기억</span><p>${noteValue(state.memory.dureraum)}</p></section><section class="report-section"><h3>02 · 자료로 알아본 영화관</h3><div class="report-cinemas">${reportCinemas().map(c=>{const n=state.notes[c.id];return `<div class="report-cinema"><h4>${c.name}</h4><span class="report-label">특징</span><p>${noteValue(n.feature)}</p><span class="report-label">선택한 근거</span><p class="report-evidence">${n.evidence.length?n.evidence.map(id=>esc(c.evidence.find(e=>e.id===id).title)).join(' / '):'아직 선택하지 않았어요.'}</p><span class="report-label">사람들에게 주는 도움</span><p>${noteValue(n.help)}</p></div>`;}).join('')}</div></section><section class="report-section"><h3>03 · 우리 지역 영화관의 의미</h3>${meaningEntries().map(q=>`<div class="report-meaning-answer"><span class="report-label">${esc(q.topic)} · ${esc(q.text)}</span><p>${noteValue(state.meaning[q.id])}</p></div>`).join('')}<div class="report-note"><span class="report-label">한 문장으로 정리한 의미</span><p>${noteValue(state.meaning.final,'나의 생각을 아직 기록하지 않았어요.')}</p></div></section>${state.visit.observed.trim()||state.visit.changed.trim()?`<section class="report-section"><h3>04 · ${dateLabel()} 현장 체험 뒤의 기록</h3><span class="report-label">실제로 보거나 경험한 것</span><p>${noteValue(state.visit.observed)}</p><span class="report-label">새롭게 알게 된 영화관의 의미</span><p>${noteValue(state.visit.changed)}</p></section>`:''}<p class="small report-source-note" style="margin-top:20px">${esc(REPORT_SOURCE_NOTE)}</p>`;
+    const meta=state.identity||'이름 미입력';
+    return `<p class="report-kicker">부산 영화관 탐험대 · 나의 발견 노트</p><h2>우리 지역 영화관, 함께 발견한 의미</h2><div class="report-meta">${esc(meta)}${state.settings.movie?'<br>기억에 남는 영화 · '+esc(state.settings.movie):''}</div><section class="report-section"><h3>01 · 나의 경험</h3><span class="report-label">함께 영화를 본 기억</span><p>${noteValue(state.memory.together)}</p><span class="report-label">마음에 남은 순간</span><p>${noteValue(state.memory.impression)}</p></section><section class="report-section"><h3>02 · 자료로 알아본 영화관</h3><div class="report-cinemas">${reportCinemas().map(c=>{const n=state.notes[c.id];return `<div class="report-cinema"><h4>${c.name}</h4>${reportGallery(c)}<span class="report-label">내가 찾은 특징</span><p>${noteValue(n.feature)}</p><span class="report-label">선택한 근거</span><p class="report-evidence">${n.evidence.length?n.evidence.map(id=>esc(c.evidence.find(e=>e.id===id).title)).join(' / '):'아직 선택하지 않았어요.'}</p><span class="report-label">사람들에게 주는 도움</span><p>${noteValue(n.help)}</p>${n.question?`<span class="report-label">더 궁금한 점</span><p>${noteValue(n.question)}</p>`:''}</div>`;}).join('')}</div></section><section class="report-section"><h3>03 · 우리 지역 영화관의 의미</h3>${meaningEntries().map(q=>`<div class="report-meaning-answer"><span class="report-label">${esc(q.topic)} · ${esc(q.text)}</span><p>${noteValue(state.meaning[q.id])}</p></div>`).join('')}<div class="report-note"><span class="report-label">한 문장으로 정리한 의미</span><p>${noteValue(state.meaning.final,'나의 생각을 아직 기록하지 않았어요.')}</p></div></section>${state.visit.observed.trim()||state.visit.changed.trim()?`<section class="report-section"><h3>04 · 직접 다녀온 뒤의 발견</h3><span class="report-label">실제로 보거나 경험한 것</span><p>${noteValue(state.visit.observed)}</p><span class="report-label">새롭게 알게 된 영화관의 의미</span><p>${noteValue(state.visit.changed)}</p></section>`:''}<p class="small report-source-note" style="margin-top:20px">${esc(REPORT_SOURCE_NOTE)}</p>`;
   }
   function goStep(i) {
     if(i<0||i>=STEPS.length)return;
@@ -155,13 +154,13 @@
     if(!d.open)d.showModal();
   }
   function identityModal() {
-    modal('나의 정보',`<p>빈칸으로 두어도 모든 활동을 할 수 있어요. 저장할 기록에 표시됩니다.</p><div class="field"><label class="prompt-label" for="identityName">이름 또는 별명</label><input type="text" id="identityName" data-field="identity" value="${esc(state.identity)}" maxlength="60" placeholder="예: 김○○ 또는 영화탐정"></div><button class="btn" data-action="close">기록 계속하기</button>`);
+    modal('나의 정보',`<p>빈칸으로 두어도 모든 활동을 할 수 있어요. 저장할 기록에 표시됩니다.</p><div class="field"><label class="prompt-label" for="identityName">이름 또는 별명</label><input type="text" id="identityName" data-field="identity" value="${esc(state.identity)}" maxlength="60" placeholder="예: 김○○ 또는 영화탐정"></div><div class="field"><label class="prompt-label" for="movieTitle">기억에 남는 영화 <small>선택</small></label><input id="movieTitle" type="text" maxlength="80" data-field="settings.movie" value="${esc(state.settings.movie)}" placeholder="자유롭게 적어 보세요."></div><button class="btn" data-action="close">기록 계속하기</button>`);
   }
   function menuModal() {
-    modal('이용 안내와 설정',`<p><strong>경험 나누기 → 영화관 조사 → 의미 찾기 → 기록 저장</strong></p><p>여섯 영화관 중 관심 있는 곳을 자유롭게 골라 조사해요. 다른 영화관도 언제든 살펴볼 수 있어요. 기록은 기기마다 따로 저장돼요.</p><div class="button-row"><button class="btn soft" data-action="sources">사진 · 자료 출처</button><button class="btn secondary" data-action="projection">${projection?'보통 화면으로':'발표 화면 크게'}</button><button class="btn secondary" data-action="fullscreen">전체 화면</button></div><hr><h3>선생님 수업 안내</h3><p>경험 나누기 5분 → 자료 조사 15분 → 의미 생각하기·나누기 15분 → 정리 5분. 학생이 관심 있는 영화관을 골라 조사합니다. 같은 영화관을 여러 학생이 선택해도 됩니다. 의미 찾기에서는 세 주제의 질문 9개 중 필요한 질문을 골라 기록한 뒤 한 문장으로 정리합니다.</p><p>학생이 자료에서 특징과 근거를 찾은 뒤, 그 특징이 사람들의 생활에 주는 도움을 설명하도록 해 주세요. 방문 당시 이용한 공간과 자료로 새롭게 알게 된 공간을 구분합니다.</p><h3>우리 반 체험 정보</h3><p class="small">체험 정보는 현재 기기에만 적용됩니다. 다른 기기의 기록에는 영향을 주지 않아요.</p><div class="modal-grid"><div class="field"><label class="prompt-label" for="tripDate">롯데시네마 동래점 체험일</label><input id="tripDate" type="date" value="${state.settings.tripDate}" data-field="settings.tripDate"></div><div class="field"><label class="prompt-label" for="className">학급</label><input id="className" type="text" maxlength="40" value="${esc(state.settings.className)}" data-field="settings.className"></div></div><div class="field"><label class="prompt-label" for="movieTitle">관람 영화 (정해진 뒤 입력)</label><input id="movieTitle" type="text" maxlength="80" value="${esc(state.settings.movie)}" data-field="settings.movie" placeholder="아직 정해지지 않았다면 비워 두세요."></div><hr><h3>기록 보관</h3><p>로그인 없이 사용합니다. 기록은 서버로 전송되지 않고 현재 브라우저에 저장돼요. 브라우저 데이터를 지우기 전에는 ‘이어 쓰기 파일’을 저장해 주세요.</p><div class="button-row"><button class="btn secondary" data-action="backup">이어 쓰기 파일 저장</button><button class="btn secondary" data-action="import">파일 열기</button><button class="btn secondary" data-action="reset-question">나의 기록 지우기</button></div>`);
+    modal('이용 안내와 설정',`<p><strong>경험 나누기 → 영화관 조사 → 의미 찾기 → 기록 저장</strong></p><p>여섯 영화관 중 관심 있는 곳을 자유롭게 골라 조사해요. 다른 영화관도 언제든 살펴볼 수 있어요. 기록은 기기마다 따로 저장돼요.</p><div class="button-row"><button class="btn soft" data-action="sources">사진 · 자료 출처</button><button class="btn secondary" data-action="projection">${projection?'보통 화면으로':'발표 화면 크게'}</button><button class="btn secondary" data-action="fullscreen">전체 화면</button></div><hr><h3>선생님 수업 안내</h3><p>경험 나누기 5분 → 자료 조사 15분 → 의미 생각하기·나누기 15분 → 정리 5분. 학생이 관심 있는 영화관을 골라 조사합니다. 같은 영화관을 여러 학생이 선택해도 됩니다. 의미 찾기에서는 세 주제의 질문 9개 중 필요한 질문을 골라 기록한 뒤 한 문장으로 정리합니다.</p><p>학생이 자료에서 특징과 근거를 찾은 뒤, 그 특징이 사람들의 생활에 주는 도움을 설명하도록 해 주세요. 방문 당시 이용한 공간과 자료로 새롭게 알게 된 공간을 구분합니다.</p><hr><h3>기록 보관</h3><p>로그인 없이 사용합니다. 기록은 서버로 전송되지 않고 현재 브라우저에 저장돼요. 브라우저 데이터를 지우기 전에는 ‘이어 쓰기 파일’을 저장해 주세요.</p><div class="button-row"><button class="btn secondary" data-action="backup">이어 쓰기 파일 저장</button><button class="btn secondary" data-action="import">파일 열기</button><button class="btn secondary" data-action="reset-question">나의 기록 지우기</button></div>`);
   }
   function sourcesModal() {
-    modal('사진과 조사자료의 출처',`<p>기존 세 영화관은 2026년 10월 30일, 추가 세 영화관은 11월 4일 공식 안내를 확인해 요약했어요. 상영 영화·시간·요금은 고정된 조사자료에 넣지 않았어요.</p>${DATA.map(c=>`<div class="modal-source"><h3>${c.name} <small>${c.verifiedOn} 확인</small></h3>${c.sources.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name} ↗</a>`).join('')}<ul class="photo-source-list">${c.evidence.filter(e=>e.kind==='photo').map(e=>`<li><strong>${esc(e.title)}</strong><br>${esc(e.credit||c.coverCredit)}</li>`).join('')}</ul></div>`).join('')}<hr><p class="small">사진은 장소를 살펴보기 위한 자료 사진이며 우리 반 방문 사진이 아닙니다. 영화의전당 사진: 부산관광공사 부산 관광 아카이브(공공누리 이용 조건은 원자료에 표시). 사진별 출처는 큰 사진 보기에서 확인할 수 있어요. 사진의 원저작권은 제공 기관에 있습니다.</p><p class="small">지도는 위치 확인을 위해 외부 지도 검색으로 열립니다. 앱 안의 ‘위치 자료’는 교통 안내를 요약한 것으로 실제 지도가 아닙니다.</p>`);
+    modal('사진과 조사자료의 출처',`<p>기존 세 영화관은 2026년 10월 30일, 추가 세 영화관은 11월 4일 공식 안내를 확인해 요약했어요. 상영 영화·시간·요금은 고정된 조사자료에 넣지 않았어요.</p>${DATA.map(c=>`<div class="modal-source"><h3>${c.name} <small>${c.verifiedOn} 확인</small></h3>${c.sources.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name} ↗</a>`).join('')}<ul class="photo-source-list">${c.evidence.filter(e=>e.kind==='photo').map(e=>`<li><strong>${esc(e.title)}</strong><br>${esc(e.credit||c.coverCredit)}</li>`).join('')}</ul></div>`).join('')}<hr><p class="small">사진은 장소를 살펴보기 위한 자료 사진이며 촬영·게시 당시의 자료 사진입니다. 영화의전당 사진: 부산관광공사 부산 관광 아카이브(공공누리 이용 조건은 원자료에 표시). 사진별 출처는 큰 사진 보기에서 확인할 수 있어요. 사진의 원저작권은 제공 기관에 있습니다.</p><p class="small">거학이 캐릭터는 제공된 원본 이미지를 활용했습니다.</p><p class="small">지도는 위치 확인을 위해 외부 지도 검색으로 열립니다. 앱 안의 ‘위치 자료’는 교통 안내를 요약한 것으로 실제 지도가 아닙니다.</p>`);
   }
   function downloadBlob(blob,name) {const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
   const filename = ext => `영화관_탐험기록_${(state.identity||'나의기록').replace(/[\\/:*?"<>|]/g,'_')}.${ext}`;
@@ -176,8 +175,8 @@
     }; input.click();
   }
   function reportText() {
-    const lines=['우리 지역 영화관 탐험 기록',[state.settings.className,state.identity].filter(Boolean).join(' · '),`${dateLabel(true)} 롯데시네마 동래점 체험`,'','[나의 경험]',state.memory.together||'(미작성)','영화의전당에서의 기억: '+(state.memory.dureraum||'(미작성)')];
-    for(const c of reportCinemas()){const n=state.notes[c.id];lines.push('',`[${c.name}]`,'특징: '+(n.feature||'(미작성)'),'근거: '+(n.evidence.map(id=>c.evidence.find(e=>e.id===id).title).join(', ')||'(미선택)'),'사람들에게 주는 도움: '+(n.help||'(미작성)'));}
+    const lines=['우리 지역 영화관 탐험 기록',state.identity||'이름 미입력',state.settings.movie?'기억에 남는 영화: '+state.settings.movie:'','','[나의 경험]','함께 영화를 본 기억: '+(state.memory.together||'(미작성)'),'마음에 남은 순간: '+(state.memory.impression||'(미작성)')];
+    for(const c of reportCinemas()){const n=state.notes[c.id];lines.push('',`[${c.name}]`,'특징: '+(n.feature||'(미작성)'),'근거: '+(n.evidence.map(id=>c.evidence.find(e=>e.id===id).title).join(', ')||'(미선택)'),'사람들에게 주는 도움: '+(n.help||'(미작성)'));if(n.question)lines.push('더 궁금한 점: '+n.question);}
     lines.push('','[영화관의 의미]');for(const q of meaningEntries())lines.push(q.text,state.meaning[q.id]);lines.push('한 문장 정리: '+(state.meaning.final||'(미작성)'));
     if(state.visit.observed||state.visit.changed)lines.push('','[체험 뒤의 기록]',state.visit.observed,state.visit.changed);
     lines.push('',REPORT_SOURCE_NOTE);return lines.join('\n');
@@ -187,31 +186,54 @@
   }
   async function downloadPNG() {
     const buttons=[...document.querySelectorAll('[data-action="download-png"]')];buttons.forEach(b=>b.disabled=true);
+    showToast('사진과 기록을 한 장에 담고 있어요…');
     try {
       if(document.fonts?.ready)await document.fonts.ready;
       const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');if(!ctx)throw Error('canvas');
-      const width=1400,pad=86,inner=width-pad*2;let y=0;const commands=[];
+      const width=1400,pad=86,inner=width-pad*2;let y=0;const commands=[], photosByCinema=new Map();
+      await Promise.all(reportCinemas().map(async c=>{
+        const photos=await Promise.all(reportPhotos(c).map(async p=>{
+          const img=new Image();img.src=p.src;await img.decode();return {...p,img};
+        }));photosByCinema.set(c.id,photos);
+      }));
       const font=(size,weight=400)=>`${weight} ${size}px "Noto Sans KR","Malgun Gothic",sans-serif`;
-      function wrap(text,max,size,weight=400){ctx.font=font(size,weight);const result=[];for(const part of String(text||'아직 기록하지 않았어요.').split('\n')){let line='';for(const ch of part){if(ctx.measureText(line+ch).width>max&&line){result.push(line);line=ch;}else line+=ch;}result.push(line);}return result;}
-      function text(str,size=23,color='#304d4e',weight=400,space=15){const lines=wrap(str,inner,size,weight),lineHeight=Math.ceil(size*1.65);commands.push({kind:'text',lines,y,size,lineHeight,color,weight});y+=lines.length*lineHeight+space;}
-      function section(title){y+=20;commands.push({kind:'rule',y});y+=30;text(title,27,'#174d50',700,17);}
-      y=77;text('BUSAN CINEMA EXPLORERS',17,'#6e887c',700,20);text('우리 지역 영화관 탐험 기록',43,'#174d50',800,18);
-      text([state.settings.className,state.identity||'이름 미입력'].filter(Boolean).join(' · '),22,'#6a7d73',400,10);text(`1학기 영화의전당 방문 / ${dateLabel(true)} 롯데시네마 동래점 체험`,20,'#6a7d73',400,18);
-      if(state.settings.movie)text('관람 영화 · '+state.settings.movie,21);
-      section('01  나의 경험');text('함께 영화를 본 기억',19,'#6e887c',700,5);text(state.memory.together);text('영화의전당에서의 기억',19,'#6e887c',700,5);text(state.memory.dureraum);
-      section('02  자료로 알아본 영화관');for(const c of reportCinemas()){const n=state.notes[c.id];text(c.name,26,c.color,700,10);text('특징 · '+(n.feature||'아직 기록하지 않았어요.'));text('근거 · '+(n.evidence.map(id=>c.evidence.find(e=>e.id===id).title).join(' / ')||'아직 담지 않았어요.'),19,'#6e887c');text('사람들에게 주는 도움 · '+(n.help||'아직 기록하지 않았어요.'));y+=8;}
-      section('03  우리 지역 영화관의 의미');for(const q of meaningEntries()){text(q.topic+' · '+q.text,19,'#6e887c',700,5);text(state.meaning[q.id]);}text('한 문장으로 정리한 의미',19,'#6e887c',700,5);text(state.meaning.final,26,'#174d50',700,20);
-      if(state.visit.observed||state.visit.changed){section('04  현장 체험 뒤의 기록');text('직접 관찰한 것 · '+(state.visit.observed||'아직 기록하지 않았어요.'));text('새롭게 알게 된 의미 · '+(state.visit.changed||'아직 기록하지 않았어요.'));}
-      y+=16;text(REPORT_SOURCE_NOTE,16,'#7b8a80',400,0);
-      canvas.width=width;canvas.height=y+85;ctx.fillStyle='#faf9f1';ctx.fillRect(0,0,width,canvas.height);ctx.fillStyle='#174d50';ctx.fillRect(0,0,width,16);
-      for(const cmd of commands){if(cmd.kind==='rule'){ctx.strokeStyle='#d8e1d4';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pad,cmd.y);ctx.lineTo(width-pad,cmd.y);ctx.stroke();}else{ctx.font=font(cmd.size,cmd.weight);ctx.fillStyle=cmd.color;ctx.textBaseline='top';cmd.lines.forEach((line,i)=>ctx.fillText(line,pad,cmd.y+i*cmd.lineHeight));}}
-      const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('blob');downloadBlob(blob,filename('png'));showToast('기록 이미지를 저장했어요.');
-    } catch {showToast('이미지 저장이 어려워요. 인쇄 · PDF 저장을 이용해 주세요.');}
+      function wrap(value,max,size,weight=400){ctx.font=font(size,weight);const result=[];for(const part of String(value||'아직 기록하지 않았어요.').split('\n')){let line='';for(const ch of part){if(ctx.measureText(line+ch).width>max&&line){result.push(line);line=ch;}else line+=ch;}result.push(line);}return result;}
+      function text(str,size=23,color='#203e5d',weight=400,space=15){const lines=wrap(str,inner,size,weight),lineHeight=Math.ceil(size*1.65);commands.push({kind:'text',lines,y,size,lineHeight,color,weight});y+=lines.length*lineHeight+space;}
+      function section(title){y+=24;commands.push({kind:'section',title,y});y+=86;}
+      function gallery(c){
+        const photos=photosByCinema.get(c.id),cols=photos.length===1?1:2,gap=22,w=(inner-(cols-1)*gap)/cols,h=cols===1?470:350;
+        for(let i=0;i<photos.length;i+=cols){const row=photos.slice(i,i+cols);let captionHeight=0;
+          row.forEach((p,j)=>{const lines=wrap(p.title,w-24,18,500);captionHeight=Math.max(captionHeight,lines.length*29);commands.push({kind:'image',photo:p,x:pad+j*(w+gap),y,w,h,lines});});
+          y+=h+captionHeight+42;
+        }
+      }
+      y=67;text('부산 영화관 탐험대 · 나의 발견 노트',20,'#567999',700,17);text('우리 지역 영화관 탐험 기록',43,'#153d66',800,17);
+      text(state.identity||'이름 미입력',23,'#567999',600,15);
+      if(state.settings.movie)text('기억에 남는 영화 · '+state.settings.movie,21);
+      section('01  나의 경험');text('함께 영화를 본 기억',20,'#416e98',700,5);text(state.memory.together);text('마음에 남은 순간',20,'#416e98',700,5);text(state.memory.impression);
+      section('02  자료로 알아본 영화관');for(const c of reportCinemas()){const n=state.notes[c.id];text(c.name,29,'#1b4e79',800,15);gallery(c);text('내가 찾은 특징',20,'#416e98',700,5);text(n.feature);text('선택한 근거 · '+(n.evidence.map(id=>c.evidence.find(e=>e.id===id).title).join(' / ')||'아직 담지 않았어요.'),19,'#60809b');text('사람들에게 주는 도움',20,'#416e98',700,5);text(n.help);if(n.question){text('더 궁금한 점',20,'#416e98',700,5);text(n.question);}y+=12;}
+      section('03  우리 지역 영화관의 의미');for(const q of meaningEntries()){text(q.topic+' · '+q.text,20,'#416e98',700,5);text(state.meaning[q.id]);}text('한 문장으로 정리한 의미',20,'#416e98',700,5);text(state.meaning.final,27,'#1b4e79',700,20);
+      if(state.visit.observed||state.visit.changed){section('04  직접 다녀온 뒤의 발견');text('직접 관찰한 것 · '+(state.visit.observed||'아직 기록하지 않았어요.'));text('새롭게 알게 된 의미 · '+(state.visit.changed||'아직 기록하지 않았어요.'));}
+      y+=20;text(REPORT_SOURCE_NOTE,16,'#6886a0',400,0);
+      const height=y+75,scale=Math.min(1,28800/height);canvas.width=Math.round(width*scale);canvas.height=Math.ceil(height*scale);ctx.scale(scale,scale);
+      ctx.fillStyle='#f8fcff';ctx.fillRect(0,0,width,height);ctx.fillStyle='#8dcefa';ctx.fillRect(0,0,width,21);
+      ctx.strokeStyle='#deedf9';ctx.lineWidth=1;for(let x=18;x<width;x+=34){ctx.beginPath();ctx.moveTo(x,28);ctx.lineTo(x,height);ctx.stroke();}
+      ctx.fillStyle='#f8fcff';ctx.fillRect(pad-22,45,inner+44,height-78);
+      for(const cmd of commands){
+        if(cmd.kind==='section'){
+          ctx.fillStyle='#c0e5ff';ctx.strokeStyle='#1b4e79';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(pad-15,cmd.y,inner+30,59,12);ctx.fill();ctx.stroke();ctx.font=font(27,800);ctx.fillStyle='#1b4e79';ctx.textBaseline='top';ctx.fillText(cmd.title,pad+8,cmd.y+10);
+        }else if(cmd.kind==='image'){
+          const {photo:p,x,y,w,h,lines}=cmd;ctx.fillStyle='#eaf4fc';ctx.strokeStyle='#4b7ba3';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(x,y,w,h,14);ctx.fill();ctx.stroke();
+          const fit=Math.min((w-20)/p.img.naturalWidth,(h-20)/p.img.naturalHeight),iw=p.img.naturalWidth*fit,ih=p.img.naturalHeight*fit;
+          ctx.drawImage(p.img,x+(w-iw)/2,y+(h-ih)/2,iw,ih);ctx.font=font(18,500);ctx.fillStyle='#547998';ctx.textBaseline='top';lines.forEach((line,i)=>ctx.fillText(line,x+12,y+h+10+i*29));
+        }else{ctx.font=font(cmd.size,cmd.weight);ctx.fillStyle=cmd.color;ctx.textBaseline='top';cmd.lines.forEach((line,i)=>ctx.fillText(line,pad,cmd.y+i*cmd.lineHeight));}
+      }
+      const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('blob');downloadBlob(blob,filename('png'));showToast('사진과 나의 기록을 함께 저장했어요.');
+    } catch {showToast('사진과 기록을 저장하지 못했어요. 다시 시도하거나 인쇄 · PDF 저장을 이용해 주세요.');}
     finally {buttons.forEach(b=>b.disabled=false);}
   }
   document.addEventListener('input',event=>{
     const el=event.target,path=el.dataset.field;if(!path)return;
-    if(path==='settings.tripDate'&&(!el.value||!/^\d{4}-\d{2}-\d{2}$/.test(el.value)))return;
     setPath(path,el.value);save();
     if(path.startsWith('notes.')){const c=cinema(state.cinema);const p=$('#progress-'+c.id);if(p)p.textContent=progress(c)===3?'✓':`${progress(c)}/3`;if($('#noteCount'))$('#noteCount').textContent=`${progress(c)} / 3 기록 완료`;document.querySelectorAll('[data-note-progress]').forEach(el=>el.textContent=progress(c)+' / 3');}
     if(path.startsWith('meaning.')){const id=path.split('.')[1],mark=document.querySelector('[data-meaning-mark="'+id+'"]');if(mark){mark.textContent=state.meaning[id].trim()?'✓':'';mark.setAttribute('aria-label',state.meaning[id].trim()?'생각 기록함':'생각 기록 전');}const count=document.querySelector('[data-meaning-count]');if(count)count.textContent='질문 '+meaningEntries().length+'개에 생각을 썼어요. 필요한 질문만 골라도 좋아요.';}
@@ -264,7 +286,7 @@
     if(action==='backup')return backup();
     if(action==='import')return importFile();
     if(action==='copy')return copyReport();
-    if(action==='print'){$('#printRoot').innerHTML=`<article class="report-sheet">${reportHTML(true)}</article>`;window.print();return;}
+    if(action==='print'){$('#printRoot').innerHTML=`<article class="report-sheet">${reportHTML(true)}</article>`;await Promise.all([...$('#printRoot').querySelectorAll('img')].map(img=>img.decode().catch(()=>{})));window.print();return;}
     if(action==='reset-question'){modal('나의 기록을 지울까요?',`<p>이 브라우저에 작성한 경험과 조사 기록이 지워집니다. 이어 쓰기 파일로 저장해 두면 나중에 다시 열 수 있어요.</p><div class="button-row"><button class="btn secondary" data-action="backup">먼저 파일로 저장</button><button class="btn danger" data-action="reset">기록 지우기</button></div>`);return;}
     if(action==='reset'){const settings={...state.settings};state=fresh();state.settings=settings;currentEvidence=0;save();$('#modal').close();render();showToast('나의 기록을 지웠어요.');}
   });
