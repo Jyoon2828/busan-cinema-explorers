@@ -1,0 +1,206 @@
+/* Compact activity panels keep the tablet page still; long writing stays in its field or preview. */
+.report-view{display:flex;flex-direction:column;gap:14px}
+.report-view>.page-top{margin:0}
+.report-overview{padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.overview-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.overview-head h2{font-size:24px;margin:0}
+.overview-head>span{font-size:15px;color:var(--muted)}
+.overview-cinemas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-content:start}
+.overview-cinema{display:flex;align-items:center;gap:10px;min-width:0;min-height:74px;border:2px solid #a0bfd6;border-radius:11px;background:#f3faff;padding:8px;text-align:left}
+.overview-cinema:hover{border-color:var(--navy);background:#e0f2ff}
+.overview-cinema img{width:48px;height:55px;object-fit:contain;background:white;border-radius:6px;flex-shrink:0}
+.overview-cinema>span{min-width:0}
+.overview-cinema strong{display:block;font-size:18px;line-height:1.3;font-weight:900;overflow-wrap:anywhere}
+.overview-cinema small{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;line-height:1.5;margin-top:4px;color:#5c7e98}
+.overview-meaning{padding:11px 13px;background:#e2f4ff;border:1px solid #99bed9;border-radius:10px;min-height:0}
+.overview-meaning>strong{display:block;font-size:16px;color:#4c7592;margin-bottom:5px}
+.overview-meaning p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:20px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+.report-overview>.btn{align-self:flex-start}
+.report-extra-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.report-extra-actions .btn{margin:0;font-size:16px;min-width:0;white-space:normal}
+.report-preview-dialog{width:calc(100% - 28px);max-width:1120px;max-height:94dvh;height:94dvh}
+.report-preview-dialog #modalContent{height:100%;min-height:0}
+.report-preview-dialog .modal-inner{height:100%;display:flex;flex-direction:column;gap:12px;min-height:0}
+.report-preview-dialog .modal-heading{flex-shrink:0;margin:0}
+.report-preview-body{overflow:auto;min-height:0;flex:1;padding:3px 7px 8px 0;scrollbar-width:thin}
+.report-preview-body .report-sheet{box-shadow:none}
+.report-preview-dialog .modal-inner>.btn,.report-preview-dialog .modal-inner>.button-row{flex-shrink:0;align-self:flex-end}
+.visit-dialog{max-width:1080px;width:calc(100% - 28px)}
+.visit-dialog .record-writing-grid textarea{min-height:140px}
+@media(min-width:760px) and (min-height:520px){
+  body{height:100dvh;min-height:0;overflow:hidden;display:grid;grid-template-rows:60px 54px minmax(0,1fr) 64px}
+  .app-header{height:auto;min-height:0;padding:7px 18px}
+  .steps{height:auto;padding:5px 18px;gap:8px}
+  .step{min-height:40px;padding:5px;font-size:17px}
+  .bottom-bar{height:64px;min-height:0;padding:8px 18px}
+  .bottom-bar .btn{min-height:44px}
+  body[data-step] main{height:100%;min-height:0;overflow:hidden;padding:12px 18px 14px}
+  .memory-view{height:100%;min-height:0;display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);grid-template-rows:minmax(0,1fr) auto;gap:14px 18px}
+  .adventure-hero{grid-column:1;grid-row:1 / 3;height:100%;min-height:0;align-items:flex-start}
+  .hero-copy{width:100%;padding:25px;align-self:flex-start}
+  .hero-copy h1{font-size:clamp(30px,3.1vw,42px);line-height:1.27;letter-spacing:-1.4px;margin:0 0 14px}
+  .hero-copy>p{font-size:19px;line-height:1.55;margin:0}
+  .hero-copy>.btn{display:none}
+  .adventure-hero>img.hero-art{width:83%;height:55%;inset:auto 7% 0 auto;object-position:center bottom;max-height:none}
+  .adventure-hero:after{height:120px;bottom:-25px}
+  .memory-grid{grid-column:2;grid-row:1;display:flex;height:100%;min-height:0;margin:0;gap:0}
+  .memory-grid>.journey-card{display:none}
+  .memory-form{width:100%;height:100%;min-height:0;padding:18px;gap:14px}
+  .memory-form .large-tabs{flex-shrink:0;gap:5px}
+  .memory-form .large-tabs button{flex:1;min-height:44px;font-size:18px;padding:8px 10px}
+  .memory-form .field{min-height:0;flex:1;display:flex;flex-direction:column}
+  .memory-form .prompt-label{font-size:21px;line-height:1.45;flex-shrink:0}
+  .memory-form textarea{height:0;flex:1;min-height:100px;font-size:21px;line-height:1.6;resize:none}
+  .memory-form .help{font-size:16px;line-height:1.5;margin:10px 0 0;flex-shrink:0}
+  .memory-view>.big-question{grid-column:2;grid-row:2;margin:0;padding:14px 18px;display:block}
+  .memory-view>.big-question p{font-size:21px;line-height:1.5}
+  .memory-view>.big-question .btn{display:none}
+  .meaning-view{height:100%;min-height:0;gap:12px}
+  .meaning-view>.page-top{margin:0;flex-shrink:0}
+  .meaning-view>.page-top .eyebrow{display:none}
+  .meaning-view>.page-top h1{font-size:28px;margin-bottom:4px}
+  .meaning-tabs{flex-shrink:0;min-height:48px}
+  .meaning-panel{padding:16px}
+  .meaning-panel h2{font-size:23px}
+  .meaning-form{padding:18px}
+  .meaning-form .field{min-height:0}
+  .meaning-form .field textarea{height:0;flex:1;min-height:90px;resize:none}
+  .meaning-form .field .prompt-label{font-size:20px;line-height:1.5}
+  .meaning-form .field .help{font-size:15px;line-height:1.45}
+  .meaning-optional{font-size:13px;line-height:1.45}
+  .meaning-panel-intro{font-size:15px;margin-bottom:10px}
+  .meaning-final-guide .meaning-bridge p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .meaning-question-choice,.meaning-question-choice.active{font-size:18px;line-height:1.45;padding:10px;gap:7px}
+  .report-view{height:100%;min-height:0;gap:12px}
+  .report-view>.page-top{flex-shrink:0}
+  .report-view>.page-top .eyebrow{display:none}
+  .report-view>.page-top h1{font-size:28px;margin-bottom:4px}
+  .report-view .report-layout{flex:1;min-height:0;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:stretch}
+  .report-view .report-overview{height:100%;min-height:0;padding:16px;gap:12px}
+  .report-view .report-actions{height:100%;min-height:0;position:static;padding:18px}
+  .report-view .report-actions h3{font-size:23px;margin:0 0 10px}
+  .report-view .report-actions p{font-size:17px;line-height:1.5;margin:0 0 15px}
+  .report-view .report-actions .button-row{display:grid;grid-template-columns:1fr;gap:10px}
+  .report-view .report-actions .btn{margin:0;font-size:17px;min-height:46px;padding:8px 12px}
+  .report-view .report-extra-actions{margin-top:16px;gap:9px}
+  .report-view .report-extra-actions .btn{font-size:16px;min-height:44px;padding:8px}
+  .overview-head{flex-shrink:0}
+  .overview-head h2{font-size:23px}
+  .overview-cinemas{gap:8px}
+  .overview-cinema{min-height:69px;padding:6px 8px;gap:8px}
+  .overview-cinema img{width:44px;height:49px}
+  .overview-cinema strong{font-size:17px;line-height:1.3}
+  .overview-cinema small{font-size:13px;margin-top:2px}
+  .overview-meaning{margin-top:auto;padding:9px 12px;flex-shrink:0}
+  .overview-meaning>strong{font-size:15px;margin-bottom:3px}
+  .overview-meaning p{font-size:19px;line-height:1.45}
+  .report-overview>.btn{flex-shrink:0;min-height:44px;padding:7px 15px;font-size:17px}
+}
+@media(min-width:760px) and (min-height:520px) and (max-height:720px){
+  body{grid-template-rows:54px 52px minmax(0,1fr) 60px}
+  .app-header{padding:5px 16px}.brand-sub{display:none}
+  .brand-icon{height:35px;width:35px}.brand strong{font-size:19px}
+  .app-header .icon-button{min-height:40px;font-size:14px;padding:6px 10px}
+  .steps{padding:4px 16px}.steps .step{font-size:16px;min-height:40px}
+  .bottom-bar{height:60px;padding:7px 16px}
+  body[data-step] main{padding:10px 16px 12px}
+  .memory-view{gap:11px 16px}
+  .hero-copy{padding:20px}.hero-copy h1{font-size:31px;margin-bottom:12px}
+  .hero-copy>p{font-size:18px;line-height:1.5}
+  .adventure-hero>img.hero-art{height:49%;width:80%;right:8%}
+  .memory-form{padding:15px;gap:11px}
+  .memory-form .large-tabs button{font-size:17px;min-height:42px;padding:7px 8px}
+  .memory-form .prompt-label{font-size:20px}
+  .memory-form textarea{font-size:20px;min-height:90px}
+  .memory-form .help{font-size:15px;line-height:1.45;margin-top:8px}
+  .memory-view>.big-question{padding:12px 15px}
+  .memory-view>.big-question p{font-size:20px;line-height:1.45}
+  .research-view{grid-template-rows:104px minmax(0,1fr);gap:8px}
+  .explore-panel{grid-template-rows:54px minmax(0,1fr) 54px}
+  .explore-head{padding:5px 12px}.explore-head h1{font-size:21px}
+  .cinema-area{font-size:12px;margin-top:2px}
+  .cinema-choice,.cinema-choice.active{padding:4px 8px 4px 4px}
+  .cinema-choice strong{font-size:17px}.cinema-choice small{font-size:12px;margin-top:2px}
+  .visual-column{grid-template-rows:minmax(0,1fr) 40px;padding:6px;gap:5px}
+  .research-reading{padding:10px 14px;gap:8px}
+  .research-reading h2{font-size:21px;margin-bottom:7px}
+  .research-reading>div>p{font-size:20px;line-height:1.5}
+  .reading-tools{padding-top:7px;gap:7px}
+  .reading-tools .btn{min-height:40px;font-size:15px;padding:5px 9px}
+  .reading-tools .source-link{font-size:14px}
+  .explore-footer{padding:5px 12px}
+  .explore-footer .btn{min-height:40px;font-size:16px;padding:6px 12px}
+  .meaning-view{gap:9px}
+  .meaning-view>.page-top h1,.report-view>.page-top h1{font-size:26px;margin:0}
+  .meaning-view>.page-top p,.report-view>.page-top p{display:none}
+  .meaning-tabs{min-height:44px}.meaning-tabs button{min-height:40px;font-size:16px;padding:6px 9px}
+  .meaning-panel{padding:13px}
+  .meaning-panel h2{font-size:21px;margin-bottom:10px}
+  .meaning-panel-intro{display:none}
+  .meaning-question-list{gap:8px}
+  .meaning-question-choice,.meaning-question-choice.active{font-size:18px;line-height:1.4;padding:8px;gap:7px}
+  .meaning-question-choice:not(.active)>span:nth-child(2){display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .meaning-form{padding:14px;gap:9px}
+  .meaning-form .field .prompt-label{font-size:20px;line-height:1.4;margin-bottom:8px}
+  .meaning-form .field textarea{font-size:20px;line-height:1.5;min-height:80px}
+  .meaning-form .field .help{font-size:14px;margin-top:7px}
+  .meaning-form-actions .btn{min-height:40px;font-size:16px;padding:6px 10px}
+  .meaning-optional{font-size:12px}
+  .meaning-final-guide h2{font-size:23px;line-height:1.4;margin-bottom:12px}
+  .meaning-final-guide .sentence-frame{font-size:19px;line-height:1.55;margin:0}
+  .meaning-kicker{font-size:14px;margin-bottom:9px}
+  .meaning-final-guide .meaning-bridge{margin-top:10px;padding:9px 11px}
+  .meaning-bridge>span{font-size:14px}.meaning-bridge p{font-size:17px;line-height:1.45;margin-top:5px}
+  .report-view{gap:9px}
+  .report-view .report-layout{grid-template-columns:minmax(0,1fr) 280px;gap:16px}
+  .report-view .report-overview{padding:13px;gap:7px}
+  .overview-head h2{font-size:22px}.overview-head>span{font-size:14px}
+  .overview-cinemas{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .overview-cinema{padding:6px;min-height:70px;gap:6px;align-items:center}
+  .overview-cinema img{width:32px;height:44px}
+  .overview-cinema strong{font-size:16px;line-height:1.3}
+  .overview-cinema small{font-size:12px;line-height:1.4}
+  .overview-meaning{padding:8px 10px}
+  .overview-meaning>strong{font-size:14px}
+  .overview-meaning p{font-size:18px;line-height:1.4}
+  .report-overview>.btn{min-height:40px;font-size:16px;padding:6px 12px}
+  .report-view .report-actions{padding:14px}
+  .report-view .report-actions h3{font-size:22px;margin-bottom:9px}
+  .report-view .report-actions p{font-size:16px;line-height:1.5;margin-bottom:13px}
+  .report-view .report-actions .button-row{gap:9px}
+  .report-view .report-actions .btn{min-height:42px;font-size:16px;padding:7px 10px}
+  .report-view .report-extra-actions{margin-top:14px;gap:8px}
+  .report-view .report-extra-actions .btn{min-height:42px;font-size:15px;padding:7px}
+  .record-dialog .modal-inner,.visit-dialog .modal-inner{padding:16px 20px}
+  .record-writing-grid textarea{height:125px;min-height:100px}
+}
+@media(min-width:760px) and (max-width:900px) and (min-height:721px){
+  .hero-copy{padding:20px}.hero-copy h1{font-size:30px}
+  .hero-copy>p{font-size:18px}
+  .memory-form{padding:15px}
+  .memory-form .large-tabs button{font-size:16px;padding:7px 8px}
+  .memory-view>.big-question p{font-size:20px}
+  .report-view .report-layout{grid-template-columns:minmax(0,1fr) 260px;gap:14px}
+  .report-view .report-overview,.report-view .report-actions{padding:14px}
+  .overview-head{display:block}.overview-head>span{display:block;margin-top:4px}
+  .overview-cinema{display:block;min-height:88px}
+  .overview-cinema img{display:none}
+  .overview-cinema strong{font-size:17px}
+  .report-view .report-actions h3{font-size:21px}
+  .report-view .report-actions .btn{font-size:16px}
+  .report-view .report-extra-actions{grid-template-columns:1fr}
+}
+@media(max-width:759px){
+  .report-overview{padding:17px}
+  .overview-head h2{font-size:23px}
+  .overview-cinemas{grid-template-columns:1fr}
+  .overview-cinema{min-height:77px}
+  .overview-cinema strong{font-size:19px}
+  .overview-cinema small{font-size:15px}
+  .overview-cinema img{width:57px;height:58px}
+  .report-extra-actions{margin-top:12px}
+  .report-preview-dialog .modal-inner{padding:15px}
+  .report-preview-body .report-sheet{padding:18px 14px}
+  .visit-dialog .record-writing-grid textarea{min-height:130px}
+}
+@media(min-width:760px) and (min-height:520px) and (max-height:720px){.meaning-final-guide .meaning-bridge{display:none}}
